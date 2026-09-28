@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Wagup link</title>
+<title>Wagup Link</title>
 <style>
 :root{--pri:#172033;--sec:#334155;--bg:#F8FAFC;--card:#FFFFFF;--tx:#111827;--tx2:#64748B;--bd:#E2E8F0;--act:#2563EB;--ok:#16A34A;--er:#DC2626;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F172A;--card:#172033;--tx:#F1F5F9;--tx2:#94A3B8;--bd:#334155;--pri:#0B1220}}
@@ -42,7 +42,7 @@ nav button{flex:1;min-height:56px;background:none;border:0;color:var(--tx2);font
 <script type="text/babel">
 const {useState,useEffect}=React;
 /* ===== DONNÉES (simulées) : structure prête pour tables SQL ===== */
-const CATS=[{id:'elec',n:'Électricien',i:'⚡'},{id:'plomb',n:'Plombier',i:'🔧'},{id:'peint',n:'Peintre',i:'🎨'},{id:'carr',n:'Carreleur',i:'▦'},{id:'meca',n:'Mécanicien',i:'⚙️'},{id:'maco',n:'Maçon',i:'🧱'},{id:'menu',n:'Menuisier',i:'🪚'},{id:'soud',n:'Soudeur',i:'🔥'},{id:'couv',n:'Couvreur',i:'🏠'}];
+const CATS=[{id:'elec',n:'Électricien',i:'⚡'},{id:'plomb',n:'Plombier',i:'🔧'},{id:'peint',n:'Peintre',i:'🎨'},{id:'carr',n:'Carreleur',i:'▦'},{id:'meca',n:'Mécanicien',i:'⚙️'},{id:'maco',n:'Maçon',i:'🧱'},{id:'menu',n:'Menuisier',i:'🪚'},{id:'soud',n:'Soudeur',i:'🔥'}];
 const cat=id=>CATS.find(c=>c.id===id);
 const ago=h=>Date.now()-h*36e5;
 const P=[['Jean Tchoumi','elec','Tamdja, Kamkop',8,4.7,23,'Électricien depuis 8 ans : installations neuves, dépannages et mises aux normes.',['Installation électrique','Dépannage','Éclairage'],['Tableau électrique refait','Éclairage extérieur','Câblage d’une villa']],
@@ -52,8 +52,7 @@ const P=[['Jean Tchoumi','elec','Tamdja, Kamkop',8,4.7,23,'Électricien depuis 8
 ['Patrick Nono','meca','Djeleng, Centre-ville',12,4.6,28,'Mécanicien auto : entretien, diagnostic, freins et moteur.',['Entretien','Diagnostic','Freins'],['Révision','Moteur','Freinage']],
 ['Samuel Kenfack','maco','Tamdja, Kamkop',9,4.6,19,'Maçon : fondations, murs, dalles, enduits et finitions de gros œuvre.',['Élévation de murs','Dalles et fondations','Enduits'],['Clôture en agglos','Dalle de maison','Mur porteur']],
 ['Alain Djomou','menu','Banengo, Centre-ville',7,4.5,14,'Menuisier : portes, fenêtres, charpentes en bois et meubles sur mesure.',['Portes et fenêtres','Charpente bois','Meubles sur mesure'],['Porte massive','Placards','Charpente']],
-['Bruno Tchinda','soud','Djeleng, Kamkop',6,4.4,11,'Soudeur : portails, grilles, escaliers métalliques et structures.',['Portails et grilles','Escaliers métalliques','Structures'],['Portail','Garde-corps','Hangar']],
-['Éric Mbouda','couv','Tamdja, Djeleng',8,4.6,16,'Couvreur : pose de tôles et de tuiles, réparation de fuites de toiture.',['Pose de toiture','Réparation de fuites','Gouttières'],['Toiture villa','Tôles neuves','Gouttières']]];
+['Bruno Tchinda','soud','Djeleng, Kamkop',6,4.4,11,'Soudeur : portails, grilles, escaliers métalliques et structures.',['Portails et grilles','Escaliers métalliques','Structures'],['Portail','Garde-corps','Hangar']]];
 const SEED={
  pros:P.map((p,i)=>({id:'p'+(i+1),uid:'up'+(i+1),name:p[0],cat:p[1],city:'Bafoussam',zone:p[2],exp:p[3],rating:p[4],n:p[5],bio:p[6],services:p[7],works:p[8]})),
  users:[{id:'u1',role:'client',name:'Alice Nkeng',phone:'670000001',pw:'demo'},{id:'u2',role:'client',name:'Marie Kamga',phone:'670000002',pw:'demo'},{id:'u3',role:'client',name:'Paul Ngu',phone:'670000003',pw:'demo'},{id:'u0',role:'admin',name:'Admin',phone:'admin',pw:'admin'},
@@ -151,6 +150,7 @@ const Admin=({A})=>{const{db}=A,[tab,setTab]=useState('u'),su=u=>A.ask((u.suspen
  {tab==='r'&&db.reqs.map(r=><div key={r.id} className="card"><b>{r.title}</b><div className="s">{cat(r.cat).n} · {r.city}, {r.q} · par {db.users.find(u=>u.id===r.uid)?.name}</div></div>)}
  {tab==='s'&&(db.reports.length?db.reports.map(r=><div key={r.id} className="card"><b>{r.type} : {r.name}</b><div className="s">{r.reason} · signalé par {r.by} · {dm(r.t)}</div></div>):<p className="s">Aucun signalement.</p>)}</>};
 
+const About=()=><><h1>À propos de Wagup Link</h1><div className="card"><p style={{marginTop:0}}>Wagup Link est une plateforme de mise en relation entre clients et professionnels locaux.</p><p>Notre objectif est de simplifier la recherche d’un professionnel en permettant au client de décrire son besoin, d’échanger avec des professionnels et de choisir celui qui lui convient.</p><p style={{marginBottom:0}}>Wagup Link est conçu pour rendre la mise en relation plus simple, pratique et accessible.</p><div className="s" style={{borderTop:'1px solid var(--bd)',paddingTop:12,marginTop:16}}>Fondateur<div style={{color:'var(--tx)',fontWeight:600}}>WAGOUM LOIC</div></div></div></>;
 const Modal=({A})=>{const m=A.modal,[rs,setRs]=useState('Contenu inapproprié');if(!m)return null;
  return<div className="mod"><div className="card">{m.t==='c'?<><p>{m.msg}</p><div className="r2"><button className="btn" onClick={()=>A.setModal(null)}>Annuler</button><button className="btn p" onClick={()=>{m.fn();A.setModal(null)}}>Confirmer</button></div></>
  :<><h3>Signaler : {m.name}</h3><F l="Motif" as="select" value={rs} onChange={e=>setRs(e.target.value)}>{['Contenu inapproprié','Arnaque suspectée','Comportement abusif','Autre'].map(x=><option key={x}>{x}</option>)}</F><div className="r2"><button className="btn" onClick={()=>A.setModal(null)}>Annuler</button><button className="btn p" onClick={()=>{A.upd('reports',a=>[...a,{id:rid(),by:A.me.name,type:m.type,name:m.name,reason:rs,t:Date.now()}]);A.setModal(null);A.say('Signalement envoyé. Merci.')}}>Envoyer</button></div></>}</div></div>};
@@ -171,10 +171,10 @@ function App(){
  A.contact=p=>{if(!me)return go('auth',{mode:'reg',role:'client'});if(me.role!=='client')return say('Réservé aux clients');const r=db.reqs.find(x=>x.uid===meId&&x.cat===p.cat);if(!r){say('Publiez d’abord une demande pour ce métier.');return go('pub',{cat:p.cat})}A.conv(r.id,p.id,null)};
  A.send=(cid,text,img)=>upd('convs',a=>a.map(c=>c.id===cid?{...c,msgs:[...c.msgs,{id:rid(),from:meId,text,img,t:Date.now(),read:false}]}:c));
  const N=v.n,priv=['list','pub','msgs','chat','me','req','done'].includes(N)&&!me,ub=me&&me.role!=='admin'?mine(A).reduce((s,c)=>s+unread(A,c),0):0;
- const V=priv?<Auth A={A} v={{}}/>:{home:<Home A={A}/>,auth:<Auth A={A} v={v}/>,pub:<Pub A={A} v={v}/>,done:<Done A={A}/>,list:me&&<List A={A} v={v}/>,req:me&&v.id&&<Req A={A} v={v}/>,pro:<Prof A={A} v={v}/>,msgs:me&&<Msgs A={A}/>,chat:me&&<Chat A={A} v={v}/>,me:me&&<Me A={A}/>,admin:me&&<Admin A={A}/>}[N];
+ const V=priv?<Auth A={A} v={{}}/>:{home:<Home A={A}/>,auth:<Auth A={A} v={v}/>,pub:<Pub A={A} v={v}/>,done:<Done A={A}/>,list:me&&<List A={A} v={v}/>,req:me&&v.id&&<Req A={A} v={v}/>,pro:<Prof A={A} v={v}/>,msgs:me&&<Msgs A={A}/>,chat:me&&<Chat A={A} v={v}/>,me:me&&<Me A={A}/>,admin:me&&<Admin A={A}/>,about:<About/>}[N];
  const on={chat:'msgs',pro:'list',req:'list',pub:'list',done:'list'}[N]||N;
- const tabs=!me?[['Accueil','home'],['Se connecter','auth',{mode:'login'}],['S’inscrire','auth',{mode:'reg'}]]:me.role==='admin'?[['Admin','admin'],['Accueil','home'],['Quitter','out']]:[['Accueil','home'],['Demandes','list'],['Messages'+(ub?' ('+ub+')':''),'msgs'],['Profil','me']];
- return<><header><div className="hd"><span>Wagup link</span><span className="s" style={{color:'#CBD5E1'}}>Version de démonstration</span></div></header><div className="w">{V}</div>
+ const tabs=!me?[['Accueil','home'],['Se connecter','auth',{mode:'login'}],['S’inscrire','auth',{mode:'reg'}],['À propos','about']]:me.role==='admin'?[['Admin','admin'],['Accueil','home'],['À propos','about'],['Quitter','out']]:[['Accueil','home'],['Demandes','list'],['Messages'+(ub?' ('+ub+')':''),'msgs'],['Profil','me'],['À propos','about']];
+ return<><header><div className="hd"><span>Wagup Link</span><span className="s" style={{color:'#CBD5E1'}}>Version de démonstration</span></div></header><div className="w">{V}</div>
  <nav>{tabs.map(([l,k,p])=><button key={l} className={on===k&&!(k==='auth'&&p.mode!==(v.mode||'login'))?'on':''} onClick={()=>k==='out'?A.logout():go(k,p)}>{l}</button>)}</nav><Modal A={A}/>{toast&&<div className="toast">{toast}</div>}</>}
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script></body></html>
