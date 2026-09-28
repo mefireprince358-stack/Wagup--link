@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Proxi — V1</title>
+<style>
+:root{--pri:#172033;--sec:#334155;--bg:#F8FAFC;--card:#FFFFFF;--tx:#111827;--tx2:#64748B;--bd:#E2E8F0;--act:#2563EB;--ok:#16A34A;--er:#DC2626;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F172A;--card:#172033;--tx:#F1F5F9;--tx2:#94A3B8;--bd:#334155;--pri:#0B1220}}
+:root[data-theme="dark"]{--bg:#0F172A;--card:#172033;--tx:#F1F5F9;--tx2:#94A3B8;--bd:#334155;--pri:#0B1220}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+h1{font-size:26px;line-height:1.25;margin:0 0 8px}h2{font-size:19px;margin:24px 0 10px}h3{margin:0}
+.w{max-width:720px;margin:0 auto;padding:16px 16px 96px}
+header{position:sticky;top:env(safe-area-inset-top,0px);background:var(--pri);color:#fff;z-index:5}
+.hd{max-width:720px;margin:0 auto;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;font-weight:600;letter-spacing:.3px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:16px;margin-bottom:12px;box-shadow:0 1px 2px rgba(15,23,42,.05)}
+.btn{min-height:48px;padding:0 18px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font:inherit;font-weight:600;cursor:pointer;width:100%}
+.btn.p{background:var(--act);border-color:var(--act);color:#fff}.btn.g{background:transparent;border-color:rgba(255,255,255,.4);color:#fff}
+.btn.er{color:var(--er)}.btn.sm{min-height:40px;width:auto;font-size:14px}
+.row{display:flex;gap:12px;align-items:center}.r2{display:flex;gap:10px;margin-top:12px}.col{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.s{color:var(--tx2);font-size:14px}.hero{background:var(--pri);color:#fff;border-radius:12px;padding:28px 20px}.hero p{color:#CBD5E1;margin:0}
+.av{width:48px;height:48px;border-radius:50%;background:var(--sec);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;flex:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.cat{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px 8px;text-align:center;font:inherit;color:var(--tx);cursor:pointer;min-height:48px}.cat b{display:block;font-size:24px;filter:grayscale(.6)}
+.f{display:block;margin-bottom:14px}.f span{display:block;font-size:14px;font-weight:600;margin-bottom:4px}
+.f input,.f select,.f textarea{width:100%;min-height:48px;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;font:inherit;background:var(--card);color:var(--tx)}
+.f textarea{min-height:100px}.f em{color:var(--er);font-size:13px;font-style:normal}
+.tabs{display:flex;gap:8px;margin-bottom:12px;overflow-x:auto}.tabs button{flex:none}
+.tg{display:inline-block;font-size:12px;padding:2px 8px;border-radius:99px;background:var(--bd);color:var(--sec)}.tg.ok{color:var(--ok)}.tg.er{color:var(--er)}
+nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--bd);display:flex;padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
+nav button{flex:1;min-height:56px;background:none;border:0;color:var(--tx2);font:inherit;font-size:12px;cursor:pointer}nav button.on{color:var(--act);font-weight:600}
+.msgs{display:flex;flex-direction:column;gap:8px;margin:12px 0}.b{max-width:80%;padding:8px 12px;border-radius:12px;background:var(--card);border:1px solid var(--bd);align-self:flex-start}
+.b.me{align-self:flex-end;background:var(--sec);color:#fff;border-color:var(--sec)}.b small{display:block;font-size:11px;opacity:.7;text-align:right}.b img{max-width:100%;border-radius:8px}
+.warn{background:var(--card);border:1px solid var(--bd);border-left:3px solid var(--sec);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--tx2)}
+.mod{position:fixed;inset:0;background:rgba(15,23,42,.5);display:flex;align-items:center;justify-content:center;padding:20px;z-index:20}.mod .card{max-width:420px;width:100%;margin:0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:84px;background:var(--pri);color:#fff;padding:10px 16px;border-radius:8px;z-index:30;font-size:14px}
+.st{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}.st b{font-size:24px;display:block}
+</style></head><body><div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<script type="text/babel">
+const {useState,useEffect}=React;
+/* ===== DONNÉES (simulées) : structure prête pour tables SQL ===== */
+const CATS=[{id:'elec',n:'Électricien',i:'⚡'},{id:'plomb',n:'Plombier',i:'🔧'},{id:'peint',n:'Peintre',i:'🎨'},{id:'carr',n:'Carreleur',i:'▦'},{id:'meca',n:'Mécanicien',i:'⚙️'}];
+const cat=id=>CATS.find(c=>c.id===id);
+const ago=h=>Date.now()-h*36e5;
+const P=[['Jean Tchoumi','elec','Tamdja, Kamkop',8,4.7,23,'Électricien depuis 8 ans : installations neuves, dépannages et mises aux normes.',['Installation électrique','Dépannage','Éclairage'],['Tableau électrique refait','Éclairage extérieur','Câblage d’une villa']],
+['Paul Fotso','plomb','Centre-ville, Banengo',6,4.5,17,'Plombier : fuites, sanitaires, chauffe-eau et alimentation en eau.',['Réparation de fuites','Sanitaires','Chauffe-eau'],['Salle de bain','Réseau d’eau','Chauffe-eau posé']],
+['David Kamdem','carr','Tamdja, Djeleng',10,4.8,31,'Carreleur expérimenté : sols, murs, terrasses et finitions soignées.',['Carrelage sol','Carrelage mural','Terrasses'],['Salon 40 m²','Cuisine','Terrasse']],
+['Michel Tagne','peint','Kamkop, Banengo',5,4.4,12,'Peintre en bâtiment : intérieur, extérieur, enduits et finitions.',['Peinture intérieure','Peinture extérieure','Enduits'],['Façade maison','Chambres','Salon']],
+['Patrick Nono','meca','Djeleng, Centre-ville',12,4.6,28,'Mécanicien auto : entretien, diagnostic, freins et moteur.',['Entretien','Diagnostic','Freins'],['Révision','Moteur','Freinage']]];
+const SEED={
+ pros:P.map((p,i)=>({id:'p'+(i+1),uid:'up'+(i+1),name:p[0],cat:p[1],city:'Bafoussam',zone:p[2],exp:p[3],rating:p[4],n:p[5],bio:p[6],services:p[7],works:p[8]})),
+ users:[{id:'u1',role:'client',name:'Alice Nkeng',phone:'670000001',pw:'demo'},{id:'u2',role:'client',name:'Marie Kamga',phone:'670000002',pw:'demo'},{id:'u3',role:'client',name:'Paul Ngu',phone:'670000003',pw:'demo'},{id:'u0',role:'admin',name:'Admin',phone:'admin',pw:'admin'},
+  ...P.map((p,i)=>({id:'up'+(i+1),role:'pro',name:p[0],phone:'67000001'+i,pw:'demo',proId:'p'+(i+1)}))],
+ reqs:[{id:'r1',uid:'u1',cat:'elec',city:'Bafoussam',q:'Tamdja',title:'Installation électrique — Maison',desc:'Installation électrique complète dans une maison de 4 pièces en cours de finition.',budget:'150 000 FCFA',t:ago(30),imgs:[]},
+  {id:'r2',uid:'u2',cat:'elec',city:'Bafoussam',q:'Kamkop',title:'Panne de courant dans la cuisine',desc:'Les prises de la cuisine ne fonctionnent plus depuis hier, le disjoncteur saute.',budget:'20 000 FCFA',t:ago(5),imgs:[]},
+  {id:'r3',uid:'u3',cat:'plomb',city:'Bafoussam',q:'Banengo',title:'Fuite sous l’évier',desc:'Fuite d’eau sous l’évier de la cuisine, à réparer rapidement.',budget:'15 000 FCFA',t:ago(8),imgs:[]},
+  {id:'r4',uid:'u2',cat:'peint',city:'Bafoussam',q:'Djeleng',title:'Peinture de 2 chambres',desc:'Repeindre deux chambres (environ 30 m²), peinture fournie par mes soins.',budget:'60 000 FCFA',t:ago(50),imgs:[]}],
+ convs:[{id:'c1',reqId:'r1',clientId:'u1',proId:'p1',msgs:[{id:'m1',from:'u1',text:'Bonjour, êtes-vous disponible pour ce travail ?',t:ago(3),read:true},{id:'m2',from:'up1',text:'Oui, pouvez-vous m’envoyer les photos ?',t:ago(2),read:false}]}],
+ reports:[{id:'s1',by:'Marie Kamga',type:'Profil',name:'Patrick Nono',reason:'Comportement inapproprié',t:ago(20)}],blocks:[]};
+const hm=t=>new Date(t).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+const dm=t=>new Date(t).toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
+const rid=()=>Math.random().toString(36).slice(2,9);
+const Av=({n})=><div className="av">{n[0]}</div>;
+const Rt=({p})=>p.n?`★ ${p.rating} (${p.n})`:'Nouveau';
+const F=({l,e,as:T='input',...p})=><label className="f"><span>{l}</span><T {...p}/>{e&&<em>{e}</em>}</label>;
+const CatSel=p=><F l="Catégorie" as="select" {...p}>{CATS.map(c=><option key={c.id} value={c.id}>{c.n}</option>)}</F>;
+const ANTI='Ne partagez jamais de code PIN, de mot de passe ou d’informations bancaires dans la messagerie.';
+
+/* ===== ÉCRANS ===== */
+const Home=({A})=>{const{go,me}=A;return<>
+ <div className="hero"><h1>Trouvez un professionnel près de chez vous.</h1><p>Décrivez votre besoin, échangez avec des professionnels et choisissez celui qui vous convient.</p>
+ {!me&&<div className="col"><button className="btn p" onClick={()=>go('auth',{mode:'reg',role:'client'})}>Je cherche un professionnel</button><button className="btn g" onClick={()=>go('auth',{mode:'reg',role:'pro'})}>Je suis professionnel</button></div>}
+ {me&&me.role==='client'&&<div className="col"><button className="btn p" onClick={()=>go('pub')}>Publier une demande</button></div>}</div>
+ <h2>Nos métiers</h2><div className="grid">{CATS.map(c=><button key={c.id} className="cat" onClick={()=>me?go('list',{cat:c.id}):go('auth',{mode:'reg',role:'client'})}><b>{c.i}</b>{c.n}</button>)}</div>
+ <h2>Comment ça marche</h2>{['Décrivez votre besoin','Échangez avec des professionnels','Organisez la rencontre'].map((t,i)=><div key={i} className="card row"><div className="av">{i+1}</div><b>{t}</b></div>)}</>};
+
+const check=(f,role)=>{const e={};if(f.name.trim().length<2)e.name='Nom requis (2 caractères min.)';if(!/^[26]\d{8}$/.test(f.phone))e.phone='9 chiffres, ex. 6XXXXXXXX';if((f.email||role==='pro')&&!/^\S+@\S+\.\S+$/.test(f.email))e.email='E-mail invalide';if(f.pw.length<6)e.pw='6 caractères minimum';if(role==='pro'&&f.city.trim().length<2)e.city='Ville requise';return e};
+const Auth=({A,v})=>{const[mode,setMode]=useState(v.mode||'login'),[role,setRole]=useState(v.role||'client'),[er,setEr]=useState({}),[msg,setMsg]=useState('');
+ const[f,setF]=useState({name:'',phone:'',email:'',pw:'',cat:'elec',city:'Bafoussam'});const s=k=>e=>setF({...f,[k]:e.target.value});
+ const go=()=>{if(mode==='login'){setMsg(A.login(f.phone,f.pw)||'');return}const e=check(f,role);setEr(e);if(Object.keys(e).length)return;setMsg(A.register({...f,role})||'')};
+ return<><h1>{mode==='login'?'Se connecter':'Créer un compte'}</h1>
+ {mode==='reg'&&<div className="r2" style={{marginBottom:16}}>{['client','pro'].map(r=><button key={r} className={'btn'+(role===r?' p':'')} onClick={()=>setRole(r)}>{r==='client'?'Client':'Professionnel'}</button>)}</div>}
+ <div className="card">{mode==='reg'&&<F l="Nom" value={f.name} onChange={s('name')} e={er.name}/>}
+ <F l={mode==='login'?'Téléphone (ou admin)':'Téléphone'} inputMode="tel" value={f.phone} onChange={s('phone')} e={er.phone}/>
+ {mode==='reg'&&<F l={role==='pro'?'E-mail':'E-mail (facultatif)'} type="email" value={f.email} onChange={s('email')} e={er.email}/>}
+ <F l="Mot de passe" type="password" value={f.pw} onChange={s('pw')} e={er.pw}/>
+ {mode==='reg'&&role==='pro'&&<><CatSel value={f.cat} onChange={s('cat')}/><F l="Ville / zone d’intervention" value={f.city} onChange={s('city')} e={er.city}/></>}
+ {msg&&<p style={{color:'var(--er)'}}>{msg}</p>}
+ <button className="btn p" onClick={go}>{mode==='login'?'Se connecter':'Créer mon compte'}</button>
+ <p className="s" style={{textAlign:'center'}}><a href="#" onClick={e=>{e.preventDefault();setMode(mode==='login'?'reg':'login');setMsg('');setEr({})}}>{mode==='login'?'Pas de compte ? S’inscrire':'Déjà inscrit ? Se connecter'}</a></p></div>
+ {mode==='login'&&<div className="card"><div className="s">Comptes de démonstration</div><div className="r2"><button className="btn sm" onClick={()=>A.login('670000001','demo')}>Client</button><button className="btn sm" onClick={()=>A.login('670000010','demo')}>Professionnel</button><button className="btn sm" onClick={()=>A.login('admin','admin')}>Admin</button></div></div>}</>};
+
+const Pub=({A,v})=>{const[f,setF]=useState({cat:v.cat||'elec',city:'Bafoussam',q:'',title:'',desc:'',budget:'',imgs:[]}),[er,setEr]=useState({});const s=k=>e=>setF({...f,[k]:e.target.value});
+ const ok=()=>{const e={};if(!f.q.trim())e.q='Quartier requis';if(!f.city.trim())e.city='Ville requise';if(f.title.trim().length<5)e.title='Titre trop court';if(f.desc.trim().length<20)e.desc='Décrivez un peu plus (20 caractères min.)';setEr(e);if(!Object.keys(e).length)A.publish(f)};
+ return<><h1>Publier une demande</h1><div className="card"><CatSel value={f.cat} onChange={s('cat')}/><F l="Ville" value={f.city} onChange={s('city')} e={er.city}/><F l="Quartier" value={f.q} onChange={s('q')} e={er.q}/><F l="Titre de la demande" value={f.title} onChange={s('title')} e={er.title} placeholder="Ex. Installation électrique — Maison"/><F l="Description" as="textarea" value={f.desc} onChange={s('desc')} e={er.desc}/><F l="Budget approximatif (FCFA)" inputMode="numeric" value={f.budget} onChange={s('budget')}/>
+ <F l="Photos (facultatif)" type="file" accept="image/*" multiple onChange={e=>setF({...f,imgs:[...e.target.files].slice(0,3).map(x=>URL.createObjectURL(x))})}/>
+ <div className="row">{f.imgs.map(u=><img key={u} src={u} width="64" height="64" style={{objectFit:'cover',borderRadius:8}}/>)}</div>
+ <button className="btn p" style={{marginTop:12}} onClick={ok}>Publier ma demande</button></div></>};
+const Done=({A})=><div className="card" style={{textAlign:'center'}}><div style={{fontSize:40,color:'var(--ok)'}}>✓</div><h1>Demande publiée</h1><p className="s">Les professionnels correspondants peuvent maintenant la consulter et vous répondre dans la messagerie.</p><div className="col"><button className="btn p" onClick={()=>A.go('list')}>Voir les professionnels</button><button className="btn" onClick={()=>A.go('home')}>Retour à l’accueil</button></div></div>;
+
+const ProCard=({p,A})=><div className="card"><div className="row"><Av n={p.name}/><div><b>{p.name}</b><div className="s">{cat(p.cat).n} · {p.city}</div></div></div>
+ <div className="s" style={{marginTop:8}}>Zone : {p.zone} · {p.exp} ans d’expérience · <Rt p={p}/></div>
+ <div className="r2"><button className="btn" onClick={()=>A.go('pro',{id:p.id})}>Voir le profil</button><button className="btn p" onClick={()=>A.contact(p)}>Contacter</button></div></div>;
+const ReqCard=({r,A})=>{const c=A.db.convs.find(x=>x.reqId===r.id&&x.proId===A.me.proId);return<div className="card"><b>{r.title}</b><div className="s">{cat(r.cat).n} · {r.city}, {r.q} · {dm(r.t)}</div><p style={{margin:'8px 0'}}>{r.desc.slice(0,90)}{r.desc.length>90?'…':''}</p><div className="s">Budget : {r.budget||'non précisé'}</div>
+ <div className="r2"><button className="btn" onClick={()=>A.go('req',{id:r.id})}>Voir la demande</button><button className="btn p" onClick={()=>A.interest(r)}>{c?'Ouvrir la discussion':'Je suis intéressé'}</button></div></div>};
+const List=({A,v})=>{const{db,me}=A;const[fc,setFc]=useState(v.cat||'all');
+ if(me.role==='pro'){const rs=db.reqs.filter(r=>r.cat===A.meP.cat&&r.uid!==me.id);return<><h1>Demandes</h1><p className="s">Demandes correspondant à votre métier : {cat(A.meP.cat).n}.</p>{rs.length?rs.map(r=><ReqCard key={r.id} r={r} A={A}/>):<p className="s">Aucune demande pour le moment.</p>}</>}
+ const ps=db.pros.filter(p=>(fc==='all'||p.cat===fc)&&!db.users.find(u=>u.id===p.uid)?.suspended);
+ return<><h1>Professionnels</h1><button className="btn p" onClick={()=>A.go('pub',{cat:fc==='all'?undefined:fc})}>Publier une demande</button><div className="tabs" style={{marginTop:12}}>{[{id:'all',n:'Tous'},...CATS].map(c=><button key={c.id} className={'btn sm'+(fc===c.id?' p':'')} onClick={()=>setFc(c.id)}>{c.n}</button>)}</div>{ps.map(p=><ProCard key={p.id} p={p} A={A}/>)}</>};
+const Req=({A,v})=>{const r=A.db.reqs.find(x=>x.id===v.id),cl=A.db.users.find(u=>u.id===r.uid);return<><button className="btn sm" onClick={()=>A.go('list')}>← Retour</button><div className="card" style={{marginTop:12}}><h1>{r.title}</h1><div className="s">{cat(r.cat).n} · {r.city}, {r.q} · {dm(r.t)}</div><p>{r.desc}</p><p><b>Budget :</b> {r.budget||'non précisé'}</p><div className="s">Publié par {cl.name}</div>{r.imgs.map(u=><img key={u} src={u} style={{width:'100%',borderRadius:8,marginTop:8}}/>)}
+ <div className="r2"><button className="btn p" onClick={()=>A.interest(r)}>Je suis intéressé</button><button className="btn er" onClick={()=>A.setModal({t:'r',type:'Demande',name:r.title})}>Signaler</button></div></div></>};
+
+const Prof=({A,v,own})=>{const p=A.db.pros.find(x=>x.id===(own?A.me.proId:v.id));const[e,setE]=useState({bio:p.bio,exp:p.exp,zone:p.zone,sv:p.services.join(', ')});
+ return<>{!own&&<button className="btn sm" onClick={()=>A.go('list')}>← Retour</button>}<div className="card" style={{marginTop:own?0:12}}><div className="row"><Av n={p.name}/><div><h3>{p.name}</h3><div className="s">{cat(p.cat).n} · {p.city}</div></div></div>
+ <p className="s">Zone d’intervention : {p.zone} · {p.exp} ans d’expérience · <Rt p={p}/></p><p>{p.bio||'Aucune présentation pour le moment.'}</p>
+ {p.services.length>0&&<><b>Services proposés</b><div style={{margin:'6px 0 12px'}}>{p.services.map(x=><span key={x} className="tg" style={{marginRight:6}}>{x}</span>)}</div></>}
+ {p.works.length>0&&<><b>Travaux réalisés</b><div className="grid" style={{marginTop:6}}>{p.works.map((w,i)=><div key={w} style={{background:['#94A3B8','#64748B','#CBD5E1'][i%3],borderRadius:8,height:84,padding:8,fontSize:12,color:'#0F172A',display:'flex',alignItems:'flex-end'}}>{w}</div>)}</div></>}
+ {!own&&<div className="r2"><button className="btn p" onClick={()=>A.contact(p)}>Contacter</button><button className="btn er" onClick={()=>A.setModal({t:'r',type:'Profil',name:p.name})}>Signaler</button></div>}</div>
+ {own&&<div className="card"><h3 style={{marginBottom:12}}>Modifier mon profil</h3><F l="Présentation" as="textarea" value={e.bio} onChange={x=>setE({...e,bio:x.target.value})}/><F l="Années d’expérience" type="number" min="0" value={e.exp} onChange={x=>setE({...e,exp:x.target.value})}/><F l="Zone d’intervention" value={e.zone} onChange={x=>setE({...e,zone:x.target.value})}/><F l="Services (séparés par des virgules)" value={e.sv} onChange={x=>setE({...e,sv:x.target.value})}/>
+ <button className="btn p" onClick={()=>{A.upd('pros',a=>a.map(q=>q.id===p.id?{...q,bio:e.bio,exp:+e.exp||0,zone:e.zone,services:e.sv.split(',').map(z=>z.trim()).filter(Boolean)}:q));A.say('Profil enregistré')}}>Enregistrer</button></div>}
+ {own&&<button className="btn" onClick={A.logout}>Se déconnecter</button>}</>};
+const Me=({A})=>A.me.role==='pro'?<Prof A={A} own/>:<><h1>Mon profil</h1><div className="card"><div className="row"><Av n={A.me.name}/><div><b>{A.me.name}</b><div className="s">{A.me.phone}</div></div></div></div><button className="btn" onClick={A.logout}>Se déconnecter</button></>;
+
+const info=(A,c)=>{const pro=A.db.pros.find(p=>p.id===c.proId),cl=A.db.users.find(u=>u.id===c.clientId),ip=A.me.role==='pro';return{req:A.db.reqs.find(r=>r.id===c.reqId),other:ip?cl.name:pro.name,key:ip?cl.id:pro.id,ouid:ip?cl.id:pro.uid}};
+const mine=A=>A.db.convs.filter(c=>A.me.role==='pro'?c.proId===A.me.proId:c.clientId===A.meId);
+const unread=(A,c)=>c.msgs.filter(m=>m.from!==A.meId&&!m.read).length;
+const Msgs=({A})=>{const cs=mine(A);return<><h1>Messages</h1>{cs.length?cs.map(c=>{const i=info(A,c),l=c.msgs[c.msgs.length-1],u=unread(A,c);return<div key={c.id} className="card" onClick={()=>A.go('chat',{id:c.id})} style={{cursor:'pointer'}}><div className="row" style={{justifyContent:'space-between'}}><b>{i.req.title}</b>{u>0&&<span className="tg" style={{background:'var(--act)',color:'#fff'}}>{u}</span>}</div><div className="s">{i.other}</div><div className="s">{l?(l.from===A.meId?'Vous : ':'')+(l.text||'📷 Photo'):'Aucun message'}</div></div>}):<p className="s">Aucune conversation. Elles démarrent depuis une demande.</p>}</>};
+const Chat=({A,v})=>{const c=A.db.convs.find(x=>x.id===v.id),i=info(A,c),[t,setT]=useState('');
+ const bl=A.db.blocks.some(b=>(b.by===A.meId&&b.target===i.key)||(b.by===i.ouid&&b.target===A.meId));
+ useEffect(()=>{if(unread(A,c))A.upd('convs',a=>a.map(x=>x.id===c.id?{...x,msgs:x.msgs.map(m=>m.from!==A.meId?{...m,read:true}:m)}:x))},[c.msgs.length]);
+ const go=()=>{if(t.trim()){A.send(c.id,t.trim());setT('')}};
+ return<><div className="row" style={{justifyContent:'space-between'}}><button className="btn sm" onClick={()=>A.go('msgs')}>←</button><div style={{flex:1}}><b>{i.req.title}</b><div className="s">{i.other}</div></div></div>
+ <div className="r2"><button className="btn sm er" onClick={()=>A.setModal({t:'r',type:'Utilisateur',name:i.other})}>Signaler</button>{!bl&&<button className="btn sm er" onClick={()=>A.ask('Bloquer '+i.other+' ? Vous ne pourrez plus échanger.',()=>A.upd('blocks',a=>[...a,{by:A.meId,target:i.key}]))}>Bloquer</button>}</div>
+ <div className="warn" style={{marginTop:12}}>{ANTI}</div>
+ <div className="msgs">{c.msgs.map(m=><div key={m.id} className={'b'+(m.from===A.meId?' me':'')}>{m.img&&<img src={m.img}/>}{m.text}<small>{hm(m.t)}{m.from===A.meId&&(m.read?' · ✓✓ Lu':' · ✓ Non lu')}</small></div>)}</div>
+ {bl?<p className="s">Conversation bloquée.</p>:<div className="row"><label className="btn sm" style={{display:'flex',alignItems:'center',width:'auto'}}>📷<input type="file" accept="image/*" hidden onChange={e=>e.target.files[0]&&A.send(c.id,'',URL.createObjectURL(e.target.files[0]))}/></label><input value={t} onChange={e=>setT(e.target.value)} onKeyDown={e=>e.key==='Enter'&&go()} placeholder="Votre message…" style={{flex:1,minHeight:48,padding:'0 12px',border:'1px solid var(--bd)',borderRadius:8,font:'inherit',background:'var(--card)',color:'var(--tx)'}}/><button className="btn p sm" style={{minHeight:48}} onClick={go}>Envoyer</button></div>}</>};
+
+const Admin=({A})=>{const{db}=A,[tab,setTab]=useState('u'),su=u=>A.ask((u.suspended?'Réactiver':'Suspendre')+' le compte de '+u.name+' ?',()=>A.upd('users',a=>a.map(x=>x.id===u.id?{...x,suspended:!x.suspended}:x)));
+ const us=db.users.filter(u=>u.role!=='admin'),S=[['Clients',us.filter(u=>u.role==='client').length],['Professionnels',us.filter(u=>u.role==='pro').length],['Demandes',db.reqs.length],['Conversations',db.convs.length],['Signalements',db.reports.length]];
+ const U=({u})=><div className="card row" style={{justifyContent:'space-between'}}><div><b>{u.name}</b> <span className="tg">{u.role==='pro'?cat(db.pros.find(p=>p.id===u.proId)?.cat)?.n:'Client'}</span>{u.suspended&&<span className="tg er">Suspendu</span>}<div className="s">{u.phone}</div></div><button className="btn sm" onClick={()=>su(u)}>{u.suspended?'Réactiver':'Suspendre'}</button></div>;
+ return<><h1>Administration</h1><div className="st">{S.map(([l,n])=><div key={l} className="card"><b>{n}</b><span className="s">{l}</span></div>)}</div>
+ <div className="tabs">{[['u','Utilisateurs'],['p','Professionnels'],['r','Demandes'],['s','Signalements']].map(([k,l])=><button key={k} className={'btn sm'+(tab===k?' p':'')} onClick={()=>setTab(k)}>{l}</button>)}</div>
+ {tab==='u'&&us.map(u=><U key={u.id} u={u}/>)}{tab==='p'&&us.filter(u=>u.role==='pro').map(u=><U key={u.id} u={u}/>)}
+ {tab==='r'&&db.reqs.map(r=><div key={r.id} className="card"><b>{r.title}</b><div className="s">{cat(r.cat).n} · {r.city}, {r.q} · par {db.users.find(u=>u.id===r.uid)?.name}</div></div>)}
+ {tab==='s'&&(db.reports.length?db.reports.map(r=><div key={r.id} className="card"><b>{r.type} : {r.name}</b><div className="s">{r.reason} · signalé par {r.by} · {dm(r.t)}</div></div>):<p className="s">Aucun signalement.</p>)}</>};
+
+const Modal=({A})=>{const m=A.modal,[rs,setRs]=useState('Contenu inapproprié');if(!m)return null;
+ return<div className="mod"><div className="card">{m.t==='c'?<><p>{m.msg}</p><div className="r2"><button className="btn" onClick={()=>A.setModal(null)}>Annuler</button><button className="btn p" onClick={()=>{m.fn();A.setModal(null)}}>Confirmer</button></div></>
+ :<><h3>Signaler : {m.name}</h3><F l="Motif" as="select" value={rs} onChange={e=>setRs(e.target.value)}>{['Contenu inapproprié','Arnaque suspectée','Comportement abusif','Autre'].map(x=><option key={x}>{x}</option>)}</F><div className="r2"><button className="btn" onClick={()=>A.setModal(null)}>Annuler</button><button className="btn p" onClick={()=>{A.upd('reports',a=>[...a,{id:rid(),by:A.me.name,type:m.type,name:m.name,reason:rs,t:Date.now()}]);A.setModal(null);A.say('Signalement envoyé. Merci.')}}>Envoyer</button></div></>}</div></div>};
+
+/* ===== APP : les fonctions de A = couche « API » à remplacer par des appels serveur ===== */
+function App(){
+ const[db,setDb]=useState(SEED),[meId,setMeId]=useState(null),[v,setV]=useState({n:'home'}),[modal,setModal]=useState(null),[toast,setToast]=useState('');
+ const me=db.users.find(u=>u.id===meId),meP=me&&db.pros.find(p=>p.id===me.proId);
+ const go=(n,p={})=>{setV({n,...p});window.scrollTo(0,0)},say=m=>{setToast(m);setTimeout(()=>setToast(''),2500)},ask=(msg,fn)=>setModal({t:'c',msg,fn}),upd=(k,f)=>setDb(d=>({...d,[k]:f(d[k])}));
+ const A={db,me,meId,meP,go,say,ask,modal,setModal,upd,logout:()=>{setMeId(null);go('home')}};
+ A.login=(ph,pw)=>{const u=db.users.find(x=>x.phone===ph.trim()&&x.pw===pw);if(!u)return'Téléphone ou mot de passe incorrect.';if(u.suspended)return'Ce compte est suspendu.';setMeId(u.id);go(u.role==='admin'?'admin':'home');return null};
+ A.register=f=>{if(db.users.some(u=>u.phone===f.phone))return'Ce numéro est déjà inscrit.';const id='u'+rid(),u={id,role:f.role,name:f.name.trim(),phone:f.phone,email:f.email,pw:f.pw};
+  if(f.role==='pro'){u.proId='p'+rid();upd('pros',a=>[...a,{id:u.proId,uid:id,name:u.name,cat:f.cat,city:f.city,zone:f.city,exp:0,rating:0,n:0,bio:'',services:[],works:[]}])}
+  upd('users',a=>[...a,u]);setMeId(id);go(f.role==='pro'?'me':'home');say('Compte créé');return null};
+ A.publish=f=>{const id='r'+rid();upd('reqs',a=>[{...f,id,uid:meId,t:Date.now()},...a]);go('done',{id})};
+ A.conv=(reqId,proId,text)=>{const c=db.convs.find(x=>x.reqId===reqId&&x.proId===proId);if(c)return go('chat',{id:c.id});const req=db.reqs.find(r=>r.id===reqId),id='c'+rid();upd('convs',a=>[...a,{id,reqId,clientId:req.uid,proId,msgs:text?[{id:rid(),from:meId,text,t:Date.now(),read:false}]:[]}]);go('chat',{id})};
+ A.interest=r=>A.conv(r.id,meP.id,'Bonjour, je suis intéressé par votre demande « '+r.title+' ». Je suis disponible pour en discuter.');
+ A.contact=p=>{if(!me)return go('auth',{mode:'reg',role:'client'});if(me.role!=='client')return say('Réservé aux clients');const r=db.reqs.find(x=>x.uid===meId&&x.cat===p.cat);if(!r){say('Publiez d’abord une demande pour ce métier.');return go('pub',{cat:p.cat})}A.conv(r.id,p.id,null)};
+ A.send=(cid,text,img)=>upd('convs',a=>a.map(c=>c.id===cid?{...c,msgs:[...c.msgs,{id:rid(),from:meId,text,img,t:Date.now(),read:false}]}:c));
+ const N=v.n,priv=['list','pub','msgs','chat','me','req','done'].includes(N)&&!me,ub=me&&me.role!=='admin'?mine(A).reduce((s,c)=>s+unread(A,c),0):0;
+ const V=priv?<Auth A={A} v={{}}/>:{home:<Home A={A}/>,auth:<Auth A={A} v={v}/>,pub:<Pub A={A} v={v}/>,done:<Done A={A}/>,list:me&&<List A={A} v={v}/>,req:me&&v.id&&<Req A={A} v={v}/>,pro:<Prof A={A} v={v}/>,msgs:me&&<Msgs A={A}/>,chat:me&&<Chat A={A} v={v}/>,me:me&&<Me A={A}/>,admin:me&&<Admin A={A}/>}[N];
+ const on={chat:'msgs',pro:'list',req:'list',pub:'list',done:'list'}[N]||N;
+ const tabs=!me?[['Accueil','home'],['Se connecter','auth',{mode:'login'}],['S’inscrire','auth',{mode:'reg'}]]:me.role==='admin'?[['Admin','admin'],['Accueil','home'],['Quitter','out']]:[['Accueil','home'],['Demandes','list'],['Messages'+(ub?' ('+ub+')':''),'msgs'],['Profil','me']];
+ return<><header><div className="hd"><span>Proxi</span><span className="s" style={{color:'#CBD5E1'}}>Version de démonstration</span></div></header><div className="w">{V}</div>
+ <nav>{tabs.map(([l,k,p])=><button key={l} className={on===k&&!(k==='auth'&&p.mode!==(v.mode||'login'))?'on':''} onClick={()=>k==='out'?A.logout():go(k,p)}>{l}</button>)}</nav><Modal A={A}/>{toast&&<div className="toast">{toast}</div>}</>}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>
