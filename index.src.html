@@ -53,7 +53,7 @@ async function loadAll(){
  const q=t=>sb.from(t).select('*').then(r=>r.data||[]);
  const[jobs,cities,prof,pros,reqs,convs,msgs,bl,rep]=await Promise.all(['jobs','cities','profiles','professionals','requests','conversations','messages','blocks','reports'].map(q));
  CATS.splice(0,CATS.length,...jobs.filter(j=>j.active).map(j=>({id:j.id,n:j.name,i:j.icon||'•'})));
- CITIES=cities.filter(c=>c.active);
+ CITIES=cities.filter(c=>c.active).sort((a,b)=>a.name.localeCompare(b.name,'fr'));
  const cn=id=>cities.find(c=>c.id===id)?.name||'',pn=id=>prof.find(x=>x.id===id)?.name||'';
  return{users:prof.map(p=>({id:p.id,role:p.role,name:p.name,suspended:p.suspended,proId:p.role==='pro'?p.id:undefined})),
  pros:pros.map(p=>({id:p.id,uid:p.id,name:pn(p.id),cat:p.job_id,cityId:p.city_id,city:cn(p.city_id),zone:p.zone||'',exp:p.exp_years||0,rating:0,n:0,bio:p.bio||'',services:p.services||[],works:[]})),
@@ -68,7 +68,7 @@ const Av=({n})=><div className="av">{n[0]}</div>;
 const Rt=({p})=>p.n?`★ ${p.rating} (${p.n})`:'Nouveau';
 const F=({l,e,as:T='input',...p})=><label className="f"><span>{l}</span><T {...p}/>{e&&<em>{e}</em>}</label>;
 const CatSel=p=><F l="Catégorie" as="select" {...p}>{CATS.map(c=><option key={c.id} value={c.id}>{c.n}</option>)}</F>;
-const CitySel=p=><F l="Ville" as="select" {...p}>{CITIES.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</F>;
+const CitySel=p=><F l="Ville" as="select" {...p}><option value="">Choisir une ville…</option>{CITIES.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</F>;
 const ANTI='Ne partagez jamais de code PIN, de mot de passe ou d’informations bancaires dans la messagerie.';
 
 /* ===== ÉCRANS ===== */
@@ -81,7 +81,7 @@ const Home=({A})=>{const{go,me}=A;return<>
 
 const check=(f,role)=>{const e={};if(f.name.trim().length<2)e.name='Nom requis (2 caractères min.)';if(!/^[26]\d{8}$/.test(f.phone))e.phone='9 chiffres, ex. 6XXXXXXXX';if((f.email||role==='pro')&&!/^\S+@\S+\.\S+$/.test(f.email))e.email='E-mail invalide';if(f.pw.length<6)e.pw='6 caractères minimum';if(role==='pro'&&!f.cityId)e.city='Ville requise';return e};
 const Auth=({A,v})=>{const[mode,setMode]=useState(v.mode||'login'),[role,setRole]=useState(v.role||'client'),[er,setEr]=useState({}),[msg,setMsg]=useState('');
- const[f,setF]=useState({name:'',phone:'',email:'',pw:'',cat:CATS[0]?.id,cityId:CITIES[0]?.id,zone:''});const s=k=>e=>setF({...f,[k]:e.target.value});
+ const[f,setF]=useState({name:'',phone:'',email:'',pw:'',cat:CATS[0]?.id,cityId:'',zone:''});const s=k=>e=>setF({...f,[k]:e.target.value});
  const go=async()=>{if(mode==='login'){setMsg(await A.login(f.phone,f.pw)||'');return}const e=check(f,role);setEr(e);if(Object.keys(e).length)return;setMsg(await A.register({...f,role})||'')};
  return<><h1>{mode==='login'?'Se connecter':'Créer un compte'}</h1>
  {mode==='reg'&&<div className="r2" style={{marginBottom:16}}>{['client','pro'].map(r=><button key={r} className={'btn'+(role===r?' p':'')} onClick={()=>setRole(r)}>{r==='client'?'Client':'Professionnel'}</button>)}</div>}
@@ -95,7 +95,7 @@ const Auth=({A,v})=>{const[mode,setMode]=useState(v.mode||'login'),[role,setRole
  <p className="s" style={{textAlign:'center'}}><a href="#" onClick={e=>{e.preventDefault();setMode(mode==='login'?'reg':'login');setMsg('');setEr({})}}>{mode==='login'?'Pas de compte ? S’inscrire':'Déjà inscrit ? Se connecter'}</a></p></div>
  </>};
 
-const Pub=({A,v})=>{const[f,setF]=useState({cat:v.cat||CATS[0]?.id,cityId:CITIES[0]?.id,q:'',title:'',desc:'',budget:'',imgs:[]}),[er,setEr]=useState({});const s=k=>e=>setF({...f,[k]:e.target.value});
+const Pub=({A,v})=>{const[f,setF]=useState({cat:v.cat||CATS[0]?.id,cityId:'',q:'',title:'',desc:'',budget:'',imgs:[]}),[er,setEr]=useState({});const s=k=>e=>setF({...f,[k]:e.target.value});
  const ok=()=>{const e={};if(!f.q.trim())e.q='Quartier requis';if(!f.cityId)e.city='Ville requise';if(f.title.trim().length<5)e.title='Titre trop court';if(f.desc.trim().length<20)e.desc='Décrivez un peu plus (20 caractères min.)';setEr(e);if(!Object.keys(e).length)A.publish(f)};
  return<><h1>Publier une demande</h1><div className="card"><CatSel value={f.cat} onChange={s('cat')}/><CitySel value={f.cityId} onChange={s('cityId')} e={er.city}/><F l="Quartier" value={f.q} onChange={s('q')} e={er.q}/><F l="Titre de la demande" value={f.title} onChange={s('title')} e={er.title} placeholder="Ex. Installation électrique — Maison"/><F l="Description" as="textarea" value={f.desc} onChange={s('desc')} e={er.desc}/><F l="Budget approximatif (FCFA)" inputMode="numeric" value={f.budget} onChange={s('budget')}/>
  <button className="btn p" style={{marginTop:12}} onClick={ok}>Publier ma demande</button></div></>};
