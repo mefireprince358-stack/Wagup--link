@@ -26,7 +26,7 @@ header{position:sticky;top:env(safe-area-inset-top,0px);background:var(--pri);co
 .f input,.f select,.f textarea{width:100%;min-height:48px;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;font:inherit;background:var(--card);color:var(--tx)}
 .f textarea{min-height:100px}.f em{color:var(--er);font-size:13px;font-style:normal}
 .tabs{display:flex;gap:8px;margin-bottom:12px;overflow-x:auto}.tabs button{flex:none}
-.tg{display:inline-block;font-size:12px;padding:2px 8px;border-radius:99px;background:var(--bd);color:var(--sec)}.tg.ok{color:var(--ok)}.tg.er{color:var(--er)}
+.tg{display:inline-block;font-size:12px;padding:2px 8px;border-radius:99px;background:var(--bd);color:var(--tx2)}.tg.ok{color:var(--ok)}.tg.er{color:var(--er)}
 nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--bd);display:flex;padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
 nav button{flex:1;min-height:56px;background:none;border:0;color:var(--tx2);font:inherit;font-size:12px;cursor:pointer}nav button.on{color:var(--act);font-weight:600}
 .msgs{display:flex;flex-direction:column;gap:8px;margin:12px 0}.b{max-width:80%;padding:8px 12px;border-radius:12px;background:var(--card);border:1px solid var(--bd);align-self:flex-start}
@@ -51,11 +51,11 @@ const em=ph=>ph.includes('@')?ph.trim():ph.trim()+'@wagup.app';
 const T=x=>new Date(x).getTime();
 async function loadAll(){
  const q=t=>sb.from(t).select('*').then(r=>r.data||[]);
- const[jobs,cities,prof,pros,reqs,convs,msgs,bl,rep]=await Promise.all(['jobs','cities','profiles','professionals','requests','conversations','messages','blocks','reports'].map(q));
+ const[jobs,cities,prof,pros,reqs,convs,msgs,bl,rep,pi]=await Promise.all(['jobs','cities','profiles','professionals','requests','conversations','messages','blocks','reports','private_info'].map(q));
  CATS.splice(0,CATS.length,...jobs.filter(j=>j.active).map(j=>({id:j.id,n:j.name,i:j.icon||'•'})));
  CITIES=cities.filter(c=>c.active).sort((a,b)=>a.name.localeCompare(b.name,'fr'));
  const cn=id=>cities.find(c=>c.id===id)?.name||'',pn=id=>prof.find(x=>x.id===id)?.name||'';
- return{users:prof.map(p=>({id:p.id,role:p.role,name:p.name,suspended:p.suspended,proId:p.role==='pro'?p.id:undefined})),
+ return{users:prof.map(p=>({id:p.id,role:p.role,name:p.name,suspended:p.suspended,phone:pi.find(x=>x.id===p.id)?.phone,proId:p.role==='pro'?p.id:undefined})),
  pros:pros.map(p=>({id:p.id,uid:p.id,name:pn(p.id),cat:p.job_id,cityId:p.city_id,city:cn(p.city_id),zone:p.zone||'',exp:p.exp_years||0,rating:0,n:0,bio:p.bio||'',services:p.services||[],works:[]})),
  reqs:reqs.map(r=>({id:r.id,uid:r.client_id,cat:r.job_id,cityId:r.city_id,city:cn(r.city_id),q:r.quartier||'',title:r.title,desc:r.description||'',budget:r.budget,t:T(r.created_at),imgs:[],status:r.status,chosen:r.chosen_pro_id})),
  convs:convs.map(c=>({id:c.id,reqId:c.request_id,clientId:c.client_id,proId:c.pro_id,msgs:msgs.filter(m=>m.conversation_id===c.id).sort((a,b)=>T(a.created_at)-T(b.created_at)).map(m=>({id:m.id,from:m.sender_id,text:m.body||'',img:m.image_url,t:T(m.created_at),read:!!m.read_at}))})),
