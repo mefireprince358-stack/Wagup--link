@@ -39,30 +39,28 @@ nav button{flex:1;min-height:56px;background:none;border:0;color:var(--tx2);font
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script type="text/babel">
 const {useState,useEffect}=React;
 /* ===== DONNÉES (simulées) : structure prête pour tables SQL ===== */
-const CATS=[{id:'elec',n:'Électricien',i:'⚡'},{id:'plomb',n:'Plombier',i:'🔧'},{id:'peint',n:'Peintre',i:'🎨'},{id:'carr',n:'Carreleur',i:'▦'},{id:'meca',n:'Mécanicien',i:'⚙️'},{id:'maco',n:'Maçon',i:'🧱'},{id:'menu',n:'Menuisier',i:'🪚'},{id:'soud',n:'Soudeur',i:'🔥'}];
+const CATS=[];let CITIES=[];
 const cat=id=>CATS.find(c=>c.id===id);
-const ago=h=>Date.now()-h*36e5;
-const P=[['Jean Tchoumi','elec','Tamdja, Kamkop',8,4.7,23,'Électricien depuis 8 ans : installations neuves, dépannages et mises aux normes.',['Installation électrique','Dépannage','Éclairage'],['Tableau électrique refait','Éclairage extérieur','Câblage d’une villa']],
-['Paul Fotso','plomb','Centre-ville, Banengo',6,4.5,17,'Plombier : fuites, sanitaires, chauffe-eau et alimentation en eau.',['Réparation de fuites','Sanitaires','Chauffe-eau'],['Salle de bain','Réseau d’eau','Chauffe-eau posé']],
-['David Kamdem','carr','Tamdja, Djeleng',10,4.8,31,'Carreleur expérimenté : sols, murs, terrasses et finitions soignées.',['Carrelage sol','Carrelage mural','Terrasses'],['Salon 40 m²','Cuisine','Terrasse']],
-['Michel Tagne','peint','Kamkop, Banengo',5,4.4,12,'Peintre en bâtiment : intérieur, extérieur, enduits et finitions.',['Peinture intérieure','Peinture extérieure','Enduits'],['Façade maison','Chambres','Salon']],
-['Patrick Nono','meca','Djeleng, Centre-ville',12,4.6,28,'Mécanicien auto : entretien, diagnostic, freins et moteur.',['Entretien','Diagnostic','Freins'],['Révision','Moteur','Freinage']],
-['Samuel Kenfack','maco','Tamdja, Kamkop',9,4.6,19,'Maçon : fondations, murs, dalles, enduits et finitions de gros œuvre.',['Élévation de murs','Dalles et fondations','Enduits'],['Clôture en agglos','Dalle de maison','Mur porteur']],
-['Alain Djomou','menu','Banengo, Centre-ville',7,4.5,14,'Menuisier : portes, fenêtres, charpentes en bois et meubles sur mesure.',['Portes et fenêtres','Charpente bois','Meubles sur mesure'],['Porte massive','Placards','Charpente']],
-['Bruno Tchinda','soud','Djeleng, Kamkop',6,4.4,11,'Soudeur : portails, grilles, escaliers métalliques et structures.',['Portails et grilles','Escaliers métalliques','Structures'],['Portail','Garde-corps','Hangar']]];
-const SEED={
- pros:P.map((p,i)=>({id:'p'+(i+1),uid:'up'+(i+1),name:p[0],cat:p[1],city:'Bafoussam',zone:p[2],exp:p[3],rating:p[4],n:p[5],bio:p[6],services:p[7],works:p[8]})),
- users:[{id:'u1',role:'client',name:'Alice Nkeng',phone:'670000001',pw:'demo'},{id:'u2',role:'client',name:'Marie Kamga',phone:'670000002',pw:'demo'},{id:'u3',role:'client',name:'Paul Ngu',phone:'670000003',pw:'demo'},{id:'u0',role:'admin',name:'Admin',phone:'admin',pw:'admin'},
-  ...P.map((p,i)=>({id:'up'+(i+1),role:'pro',name:p[0],phone:'67000001'+i,pw:'demo',proId:'p'+(i+1)}))],
- reqs:[{id:'r1',uid:'u1',cat:'elec',city:'Bafoussam',q:'Tamdja',title:'Installation électrique — Maison',desc:'Installation électrique complète dans une maison de 4 pièces en cours de finition.',budget:'150 000 FCFA',t:ago(30),imgs:[]},
-  {id:'r2',uid:'u2',cat:'elec',city:'Bafoussam',q:'Kamkop',title:'Panne de courant dans la cuisine',desc:'Les prises de la cuisine ne fonctionnent plus depuis hier, le disjoncteur saute.',budget:'20 000 FCFA',t:ago(5),imgs:[]},
-  {id:'r3',uid:'u3',cat:'plomb',city:'Bafoussam',q:'Banengo',title:'Fuite sous l’évier',desc:'Fuite d’eau sous l’évier de la cuisine, à réparer rapidement.',budget:'15 000 FCFA',t:ago(8),imgs:[]},
-  {id:'r4',uid:'u2',cat:'peint',city:'Bafoussam',q:'Djeleng',title:'Peinture de 2 chambres',desc:'Repeindre deux chambres (environ 30 m²), peinture fournie par mes soins.',budget:'60 000 FCFA',t:ago(50),imgs:[]}],
- convs:[{id:'c1',reqId:'r1',clientId:'u1',proId:'p1',msgs:[{id:'m1',from:'u1',text:'Bonjour, êtes-vous disponible pour ce travail ?',t:ago(3),read:true},{id:'m2',from:'up1',text:'Oui, pouvez-vous m’envoyer les photos ?',t:ago(2),read:false}]}],
- reports:[{id:'s1',by:'Marie Kamga',type:'Profil',name:'Patrick Nono',reason:'Comportement inapproprié',t:ago(20)}],blocks:[]};
+const SB_URL='https://qefwshejyoywnglamkft.supabase.co',SB_KEY='sb_publishable_He_E87wvQxYNBPOrgaucNg_N71Ljvib';
+const sb=supabase.createClient(SB_URL,SB_KEY);
+const em=ph=>ph.includes('@')?ph.trim():ph.trim()+'@wagup.app';
+const T=x=>new Date(x).getTime();
+async function loadAll(){
+ const q=t=>sb.from(t).select('*').then(r=>r.data||[]);
+ const[jobs,cities,prof,pros,reqs,convs,msgs,bl,rep]=await Promise.all(['jobs','cities','profiles','professionals','requests','conversations','messages','blocks','reports'].map(q));
+ CATS.splice(0,CATS.length,...jobs.filter(j=>j.active).map(j=>({id:j.id,n:j.name,i:j.icon||'•'})));
+ CITIES=cities.filter(c=>c.active);
+ const cn=id=>cities.find(c=>c.id===id)?.name||'',pn=id=>prof.find(x=>x.id===id)?.name||'';
+ return{users:prof.map(p=>({id:p.id,role:p.role,name:p.name,suspended:p.suspended,proId:p.role==='pro'?p.id:undefined})),
+ pros:pros.map(p=>({id:p.id,uid:p.id,name:pn(p.id),cat:p.job_id,cityId:p.city_id,city:cn(p.city_id),zone:p.zone||'',exp:p.exp_years||0,rating:0,n:0,bio:p.bio||'',services:p.services||[],works:[]})),
+ reqs:reqs.map(r=>({id:r.id,uid:r.client_id,cat:r.job_id,cityId:r.city_id,city:cn(r.city_id),q:r.quartier||'',title:r.title,desc:r.description||'',budget:r.budget,t:T(r.created_at),imgs:[],status:r.status,chosen:r.chosen_pro_id})),
+ convs:convs.map(c=>({id:c.id,reqId:c.request_id,clientId:c.client_id,proId:c.pro_id,msgs:msgs.filter(m=>m.conversation_id===c.id).sort((a,b)=>T(a.created_at)-T(b.created_at)).map(m=>({id:m.id,from:m.sender_id,text:m.body||'',img:m.image_url,t:T(m.created_at),read:!!m.read_at}))})),
+ blocks:bl.map(b=>({by:b.blocker_id,target:b.blocked_id})),
+ reports:rep.map(r=>({id:r.id,by:pn(r.reporter_id),type:r.target_type,name:r.target_name,reason:r.reason,t:T(r.created_at)}))}}
 const hm=t=>new Date(t).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
 const dm=t=>new Date(t).toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
 const rid=()=>Math.random().toString(36).slice(2,9);
@@ -70,6 +68,7 @@ const Av=({n})=><div className="av">{n[0]}</div>;
 const Rt=({p})=>p.n?`★ ${p.rating} (${p.n})`:'Nouveau';
 const F=({l,e,as:T='input',...p})=><label className="f"><span>{l}</span><T {...p}/>{e&&<em>{e}</em>}</label>;
 const CatSel=p=><F l="Catégorie" as="select" {...p}>{CATS.map(c=><option key={c.id} value={c.id}>{c.n}</option>)}</F>;
+const CitySel=p=><F l="Ville" as="select" {...p}>{CITIES.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</F>;
 const ANTI='Ne partagez jamais de code PIN, de mot de passe ou d’informations bancaires dans la messagerie.';
 
 /* ===== ÉCRANS ===== */
@@ -80,27 +79,25 @@ const Home=({A})=>{const{go,me}=A;return<>
  <h2>Nos métiers</h2><div className="grid">{CATS.map(c=><button key={c.id} className="cat" onClick={()=>me?go('list',{cat:c.id}):go('auth',{mode:'reg',role:'client'})}><b>{c.i}</b>{c.n}</button>)}</div>
  <h2>Comment ça marche</h2>{['Décrivez votre besoin','Échangez avec des professionnels','Organisez la rencontre'].map((t,i)=><div key={i} className="card row"><div className="av">{i+1}</div><b>{t}</b></div>)}</>};
 
-const check=(f,role)=>{const e={};if(f.name.trim().length<2)e.name='Nom requis (2 caractères min.)';if(!/^[26]\d{8}$/.test(f.phone))e.phone='9 chiffres, ex. 6XXXXXXXX';if((f.email||role==='pro')&&!/^\S+@\S+\.\S+$/.test(f.email))e.email='E-mail invalide';if(f.pw.length<6)e.pw='6 caractères minimum';if(role==='pro'&&f.city.trim().length<2)e.city='Ville requise';return e};
+const check=(f,role)=>{const e={};if(f.name.trim().length<2)e.name='Nom requis (2 caractères min.)';if(!/^[26]\d{8}$/.test(f.phone))e.phone='9 chiffres, ex. 6XXXXXXXX';if((f.email||role==='pro')&&!/^\S+@\S+\.\S+$/.test(f.email))e.email='E-mail invalide';if(f.pw.length<6)e.pw='6 caractères minimum';if(role==='pro'&&!f.cityId)e.city='Ville requise';return e};
 const Auth=({A,v})=>{const[mode,setMode]=useState(v.mode||'login'),[role,setRole]=useState(v.role||'client'),[er,setEr]=useState({}),[msg,setMsg]=useState('');
- const[f,setF]=useState({name:'',phone:'',email:'',pw:'',cat:'elec',city:'Bafoussam'});const s=k=>e=>setF({...f,[k]:e.target.value});
- const go=()=>{if(mode==='login'){setMsg(A.login(f.phone,f.pw)||'');return}const e=check(f,role);setEr(e);if(Object.keys(e).length)return;setMsg(A.register({...f,role})||'')};
+ const[f,setF]=useState({name:'',phone:'',email:'',pw:'',cat:CATS[0]?.id,cityId:CITIES[0]?.id,zone:''});const s=k=>e=>setF({...f,[k]:e.target.value});
+ const go=async()=>{if(mode==='login'){setMsg(await A.login(f.phone,f.pw)||'');return}const e=check(f,role);setEr(e);if(Object.keys(e).length)return;setMsg(await A.register({...f,role})||'')};
  return<><h1>{mode==='login'?'Se connecter':'Créer un compte'}</h1>
  {mode==='reg'&&<div className="r2" style={{marginBottom:16}}>{['client','pro'].map(r=><button key={r} className={'btn'+(role===r?' p':'')} onClick={()=>setRole(r)}>{r==='client'?'Client':'Professionnel'}</button>)}</div>}
  <div className="card">{mode==='reg'&&<F l="Nom" value={f.name} onChange={s('name')} e={er.name}/>}
- <F l={mode==='login'?'Téléphone (ou admin)':'Téléphone'} inputMode="tel" value={f.phone} onChange={s('phone')} e={er.phone}/>
+ <F l={mode==='login'?'Téléphone ou e-mail':'Téléphone'} inputMode="tel" value={f.phone} onChange={s('phone')} e={er.phone}/>
  {mode==='reg'&&<F l={role==='pro'?'E-mail':'E-mail (facultatif)'} type="email" value={f.email} onChange={s('email')} e={er.email}/>}
  <F l="Mot de passe" type="password" value={f.pw} onChange={s('pw')} e={er.pw}/>
- {mode==='reg'&&role==='pro'&&<><CatSel value={f.cat} onChange={s('cat')}/><F l="Ville / zone d’intervention" value={f.city} onChange={s('city')} e={er.city}/></>}
+ {mode==='reg'&&role==='pro'&&<><CatSel value={f.cat} onChange={s('cat')}/><CitySel value={f.cityId} onChange={s('cityId')} e={er.city}/><F l="Zone / quartier" value={f.zone} onChange={s('zone')}/></>}
  {msg&&<p style={{color:'var(--er)'}}>{msg}</p>}
  <button className="btn p" onClick={go}>{mode==='login'?'Se connecter':'Créer mon compte'}</button>
  <p className="s" style={{textAlign:'center'}}><a href="#" onClick={e=>{e.preventDefault();setMode(mode==='login'?'reg':'login');setMsg('');setEr({})}}>{mode==='login'?'Pas de compte ? S’inscrire':'Déjà inscrit ? Se connecter'}</a></p></div>
- {mode==='login'&&<div className="card"><div className="s">Comptes de démonstration</div><div className="r2"><button className="btn sm" onClick={()=>A.login('670000001','demo')}>Client</button><button className="btn sm" onClick={()=>A.login('670000010','demo')}>Professionnel</button><button className="btn sm" onClick={()=>A.login('admin','admin')}>Admin</button></div></div>}</>};
+ </>};
 
-const Pub=({A,v})=>{const[f,setF]=useState({cat:v.cat||'elec',city:'Bafoussam',q:'',title:'',desc:'',budget:'',imgs:[]}),[er,setEr]=useState({});const s=k=>e=>setF({...f,[k]:e.target.value});
- const ok=()=>{const e={};if(!f.q.trim())e.q='Quartier requis';if(!f.city.trim())e.city='Ville requise';if(f.title.trim().length<5)e.title='Titre trop court';if(f.desc.trim().length<20)e.desc='Décrivez un peu plus (20 caractères min.)';setEr(e);if(!Object.keys(e).length)A.publish(f)};
- return<><h1>Publier une demande</h1><div className="card"><CatSel value={f.cat} onChange={s('cat')}/><F l="Ville" value={f.city} onChange={s('city')} e={er.city}/><F l="Quartier" value={f.q} onChange={s('q')} e={er.q}/><F l="Titre de la demande" value={f.title} onChange={s('title')} e={er.title} placeholder="Ex. Installation électrique — Maison"/><F l="Description" as="textarea" value={f.desc} onChange={s('desc')} e={er.desc}/><F l="Budget approximatif (FCFA)" inputMode="numeric" value={f.budget} onChange={s('budget')}/>
- <F l="Photos (facultatif)" type="file" accept="image/*" multiple onChange={e=>setF({...f,imgs:[...e.target.files].slice(0,3).map(x=>URL.createObjectURL(x))})}/>
- <div className="row">{f.imgs.map(u=><img key={u} src={u} width="64" height="64" style={{objectFit:'cover',borderRadius:8}}/>)}</div>
+const Pub=({A,v})=>{const[f,setF]=useState({cat:v.cat||CATS[0]?.id,cityId:CITIES[0]?.id,q:'',title:'',desc:'',budget:'',imgs:[]}),[er,setEr]=useState({});const s=k=>e=>setF({...f,[k]:e.target.value});
+ const ok=()=>{const e={};if(!f.q.trim())e.q='Quartier requis';if(!f.cityId)e.city='Ville requise';if(f.title.trim().length<5)e.title='Titre trop court';if(f.desc.trim().length<20)e.desc='Décrivez un peu plus (20 caractères min.)';setEr(e);if(!Object.keys(e).length)A.publish(f)};
+ return<><h1>Publier une demande</h1><div className="card"><CatSel value={f.cat} onChange={s('cat')}/><CitySel value={f.cityId} onChange={s('cityId')} e={er.city}/><F l="Quartier" value={f.q} onChange={s('q')} e={er.q}/><F l="Titre de la demande" value={f.title} onChange={s('title')} e={er.title} placeholder="Ex. Installation électrique — Maison"/><F l="Description" as="textarea" value={f.desc} onChange={s('desc')} e={er.desc}/><F l="Budget approximatif (FCFA)" inputMode="numeric" value={f.budget} onChange={s('budget')}/>
  <button className="btn p" style={{marginTop:12}} onClick={ok}>Publier ma demande</button></div></>};
 const Done=({A})=><div className="card" style={{textAlign:'center'}}><div style={{fontSize:40,color:'var(--ok)'}}>✓</div><h1>Demande publiée</h1><p className="s">Les professionnels correspondants peuvent maintenant la consulter et vous répondre dans la messagerie.</p><div className="col"><button className="btn p" onClick={()=>A.go('list')}>Voir les professionnels</button><button className="btn" onClick={()=>A.go('home')}>Retour à l’accueil</button></div></div>;
 
@@ -123,25 +120,25 @@ const Prof=({A,v,own})=>{const p=A.db.pros.find(x=>x.id===(own?A.me.proId:v.id))
  {p.works.length>0&&<><b>Travaux réalisés</b><div className="grid" style={{marginTop:6}}>{p.works.map((w,i)=><div key={w} style={{background:['#94A3B8','#64748B','#CBD5E1'][i%3],borderRadius:8,height:84,padding:8,fontSize:12,color:'#0F172A',display:'flex',alignItems:'flex-end'}}>{w}</div>)}</div></>}
  {!own&&<div className="r2"><button className="btn p" onClick={()=>A.contact(p)}>Contacter</button><button className="btn er" onClick={()=>A.setModal({t:'r',type:'Profil',name:p.name})}>Signaler</button></div>}</div>
  {own&&<div className="card"><h3 style={{marginBottom:12}}>Modifier mon profil</h3><F l="Présentation" as="textarea" value={e.bio} onChange={x=>setE({...e,bio:x.target.value})}/><F l="Années d’expérience" type="number" min="0" value={e.exp} onChange={x=>setE({...e,exp:x.target.value})}/><F l="Zone d’intervention" value={e.zone} onChange={x=>setE({...e,zone:x.target.value})}/><F l="Services (séparés par des virgules)" value={e.sv} onChange={x=>setE({...e,sv:x.target.value})}/>
- <button className="btn p" onClick={()=>{A.upd('pros',a=>a.map(q=>q.id===p.id?{...q,bio:e.bio,exp:+e.exp||0,zone:e.zone,services:e.sv.split(',').map(z=>z.trim()).filter(Boolean)}:q));A.say('Profil enregistré')}}>Enregistrer</button></div>}
+ <button className="btn p" onClick={()=>{A.saveProfile({bio:e.bio,exp_years:+e.exp||0,zone:e.zone,services:e.sv.split(',').map(z=>z.trim()).filter(Boolean)})}}>Enregistrer</button></div>}
  {own&&<button className="btn" onClick={A.logout}>Se déconnecter</button>}</>};
 const Me=({A})=>A.me.role==='pro'?<Prof A={A} own/>:<><h1>Mon profil</h1><div className="card"><div className="row"><Av n={A.me.name}/><div><b>{A.me.name}</b><div className="s">{A.me.phone}</div></div></div></div><button className="btn" onClick={A.logout}>Se déconnecter</button></>;
 
-const info=(A,c)=>{const pro=A.db.pros.find(p=>p.id===c.proId),cl=A.db.users.find(u=>u.id===c.clientId),ip=A.me.role==='pro';return{req:A.db.reqs.find(r=>r.id===c.reqId),other:ip?cl.name:pro.name,key:ip?cl.id:pro.id,ouid:ip?cl.id:pro.uid}};
+const info=(A,c)=>{const pro=A.db.pros.find(p=>p.id===c.proId)||{name:'Professionnel',id:c.proId,uid:c.proId},cl=A.db.users.find(u=>u.id===c.clientId),ip=A.me.role==='pro';return{req:A.db.reqs.find(r=>r.id===c.reqId),other:ip?cl.name:pro.name,key:ip?cl.id:pro.id,ouid:ip?cl.id:pro.uid}};
 const mine=A=>A.db.convs.filter(c=>A.me.role==='pro'?c.proId===A.me.proId:c.clientId===A.meId);
 const unread=(A,c)=>c.msgs.filter(m=>m.from!==A.meId&&!m.read).length;
 const Msgs=({A})=>{const cs=mine(A);return<><h1>Messages</h1>{cs.length?cs.map(c=>{const i=info(A,c),l=c.msgs[c.msgs.length-1],u=unread(A,c);return<div key={c.id} className="card" onClick={()=>A.go('chat',{id:c.id})} style={{cursor:'pointer'}}><div className="row" style={{justifyContent:'space-between'}}><b>{i.req.title}</b>{u>0&&<span className="tg" style={{background:'var(--act)',color:'#fff'}}>{u}</span>}</div><div className="s">{i.other}</div><div className="s">{l?(l.from===A.meId?'Vous : ':'')+(l.text||'📷 Photo'):'Aucun message'}</div></div>}):<p className="s">Aucune conversation. Elles démarrent depuis une demande.</p>}</>};
 const Chat=({A,v})=>{const c=A.db.convs.find(x=>x.id===v.id),i=info(A,c),[t,setT]=useState('');
  const bl=A.db.blocks.some(b=>(b.by===A.meId&&b.target===i.key)||(b.by===i.ouid&&b.target===A.meId));
- useEffect(()=>{if(unread(A,c))A.upd('convs',a=>a.map(x=>x.id===c.id?{...x,msgs:x.msgs.map(m=>m.from!==A.meId?{...m,read:true}:m)}:x))},[c.msgs.length]);
+ useEffect(()=>{if(unread(A,c))A.markRead(c.id)},[c.msgs.length]);
  const go=()=>{if(t.trim()){A.send(c.id,t.trim());setT('')}};
  return<><div className="row" style={{justifyContent:'space-between'}}><button className="btn sm" onClick={()=>A.go('msgs')}>←</button><div style={{flex:1}}><b>{i.req.title}</b><div className="s">{i.other}</div></div></div>
- <div className="r2"><button className="btn sm er" onClick={()=>A.setModal({t:'r',type:'Utilisateur',name:i.other})}>Signaler</button>{!bl&&<button className="btn sm er" onClick={()=>A.ask('Bloquer '+i.other+' ? Vous ne pourrez plus échanger.',()=>A.upd('blocks',a=>[...a,{by:A.meId,target:i.key}]))}>Bloquer</button>}</div>
+ <div className="r2"><button className="btn sm er" onClick={()=>A.setModal({t:'r',type:'Utilisateur',name:i.other})}>Signaler</button>{!bl&&<button className="btn sm er" onClick={()=>A.ask('Bloquer '+i.other+' ? Vous ne pourrez plus échanger.',()=>A.block(i.key))}>Bloquer</button>}</div>
  <div className="warn" style={{marginTop:12}}>{ANTI}</div>
  <div className="msgs">{c.msgs.map(m=><div key={m.id} className={'b'+(m.from===A.meId?' me':'')}>{m.img&&<img src={m.img}/>}{m.text}<small>{hm(m.t)}{m.from===A.meId&&(m.read?' · ✓✓ Lu':' · ✓ Non lu')}</small></div>)}</div>
- {bl?<p className="s">Conversation bloquée.</p>:<div className="row"><label className="btn sm" style={{display:'flex',alignItems:'center',width:'auto'}}>📷<input type="file" accept="image/*" hidden onChange={e=>e.target.files[0]&&A.send(c.id,'',URL.createObjectURL(e.target.files[0]))}/></label><input value={t} onChange={e=>setT(e.target.value)} onKeyDown={e=>e.key==='Enter'&&go()} placeholder="Votre message…" style={{flex:1,minHeight:48,padding:'0 12px',border:'1px solid var(--bd)',borderRadius:8,font:'inherit',background:'var(--card)',color:'var(--tx)'}}/><button className="btn p sm" style={{minHeight:48}} onClick={go}>Envoyer</button></div>}</>};
+ {bl?<p className="s">Conversation bloquée.</p>:<div className="row"><input value={t} onChange={e=>setT(e.target.value)} onKeyDown={e=>e.key==='Enter'&&go()} placeholder="Votre message…" style={{flex:1,minHeight:48,padding:'0 12px',border:'1px solid var(--bd)',borderRadius:8,font:'inherit',background:'var(--card)',color:'var(--tx)'}}/><button className="btn p sm" style={{minHeight:48}} onClick={go}>Envoyer</button></div>}</>};
 
-const Admin=({A})=>{const{db}=A,[tab,setTab]=useState('u'),su=u=>A.ask((u.suspended?'Réactiver':'Suspendre')+' le compte de '+u.name+' ?',()=>A.upd('users',a=>a.map(x=>x.id===u.id?{...x,suspended:!x.suspended}:x)));
+const Admin=({A})=>{const{db}=A,[tab,setTab]=useState('u'),su=u=>A.ask((u.suspended?'Réactiver':'Suspendre')+' le compte de '+u.name+' ?',()=>A.suspend(u));
  const us=db.users.filter(u=>u.role!=='admin'),S=[['Clients',us.filter(u=>u.role==='client').length],['Professionnels',us.filter(u=>u.role==='pro').length],['Demandes',db.reqs.length],['Conversations',db.convs.length],['Signalements',db.reports.length]];
  const U=({u})=><div className="card row" style={{justifyContent:'space-between'}}><div><b>{u.name}</b> <span className="tg">{u.role==='pro'?cat(db.pros.find(p=>p.id===u.proId)?.cat)?.n:'Client'}</span>{u.suspended&&<span className="tg er">Suspendu</span>}<div className="s">{u.phone}</div></div><button className="btn sm" onClick={()=>su(u)}>{u.suspended?'Réactiver':'Suspendre'}</button></div>;
  return<><h1>Administration</h1><div className="st">{S.map(([l,n])=><div key={l} className="card"><b>{n}</b><span className="s">{l}</span></div>)}</div>
@@ -153,28 +150,35 @@ const Admin=({A})=>{const{db}=A,[tab,setTab]=useState('u'),su=u=>A.ask((u.suspen
 const About=()=><><h1>À propos de Wagup Link</h1><div className="card"><p style={{marginTop:0}}>Wagup Link est une plateforme de mise en relation entre clients et professionnels locaux.</p><p>Notre objectif est de simplifier la recherche d’un professionnel en permettant au client de décrire son besoin, d’échanger avec des professionnels et de choisir celui qui lui convient.</p><p style={{marginBottom:0}}>Wagup Link est conçu pour rendre la mise en relation plus simple, pratique et accessible.</p><div className="s" style={{borderTop:'1px solid var(--bd)',paddingTop:12,marginTop:16}}>Fondateur<div style={{color:'var(--tx)',fontWeight:600}}>WAGOUM LOIC</div></div></div></>;
 const Modal=({A})=>{const m=A.modal,[rs,setRs]=useState('Contenu inapproprié');if(!m)return null;
  return<div className="mod"><div className="card">{m.t==='c'?<><p>{m.msg}</p><div className="r2"><button className="btn" onClick={()=>A.setModal(null)}>Annuler</button><button className="btn p" onClick={()=>{m.fn();A.setModal(null)}}>Confirmer</button></div></>
- :<><h3>Signaler : {m.name}</h3><F l="Motif" as="select" value={rs} onChange={e=>setRs(e.target.value)}>{['Contenu inapproprié','Arnaque suspectée','Comportement abusif','Autre'].map(x=><option key={x}>{x}</option>)}</F><div className="r2"><button className="btn" onClick={()=>A.setModal(null)}>Annuler</button><button className="btn p" onClick={()=>{A.upd('reports',a=>[...a,{id:rid(),by:A.me.name,type:m.type,name:m.name,reason:rs,t:Date.now()}]);A.setModal(null);A.say('Signalement envoyé. Merci.')}}>Envoyer</button></div></>}</div></div>};
+ :<><h3>Signaler : {m.name}</h3><F l="Motif" as="select" value={rs} onChange={e=>setRs(e.target.value)}>{['Contenu inapproprié','Arnaque suspectée','Comportement abusif','Autre'].map(x=><option key={x}>{x}</option>)}</F><div className="r2"><button className="btn" onClick={()=>A.setModal(null)}>Annuler</button><button className="btn p" onClick={()=>{A.report(m.type,m.name,rs);A.setModal(null)}}>Envoyer</button></div></>}</div></div>};
 
 /* ===== APP : les fonctions de A = couche « API » à remplacer par des appels serveur ===== */
 function App(){
- const[db,setDb]=useState(SEED),[meId,setMeId]=useState(null),[v,setV]=useState({n:'home'}),[modal,setModal]=useState(null),[toast,setToast]=useState('');
+ const[db,setDb]=useState({users:[],pros:[],reqs:[],convs:[],blocks:[],reports:[]}),[meId,setMeId]=useState(null),[ready,setReady]=useState(false),[v,setV]=useState({n:'home'}),[modal,setModal]=useState(null),[toast,setToast]=useState('');
  const me=db.users.find(u=>u.id===meId),meP=me&&db.pros.find(p=>p.id===me.proId);
- const go=(n,p={})=>{setV({n,...p});window.scrollTo(0,0)},say=m=>{setToast(m);setTimeout(()=>setToast(''),2500)},ask=(msg,fn)=>setModal({t:'c',msg,fn}),upd=(k,f)=>setDb(d=>({...d,[k]:f(d[k])}));
- const A={db,me,meId,meP,go,say,ask,modal,setModal,upd,logout:()=>{setMeId(null);go('home')}};
- A.login=(ph,pw)=>{const u=db.users.find(x=>x.phone===ph.trim()&&x.pw===pw);if(!u)return'Téléphone ou mot de passe incorrect.';if(u.suspended)return'Ce compte est suspendu.';setMeId(u.id);go(u.role==='admin'?'admin':'home');return null};
- A.register=f=>{if(db.users.some(u=>u.phone===f.phone))return'Ce numéro est déjà inscrit.';const id='u'+rid(),u={id,role:f.role,name:f.name.trim(),phone:f.phone,email:f.email,pw:f.pw};
-  if(f.role==='pro'){u.proId='p'+rid();upd('pros',a=>[...a,{id:u.proId,uid:id,name:u.name,cat:f.cat,city:f.city,zone:f.city,exp:0,rating:0,n:0,bio:'',services:[],works:[]}])}
-  upd('users',a=>[...a,u]);setMeId(id);go(f.role==='pro'?'me':'home');say('Compte créé');return null};
- A.publish=f=>{const id='r'+rid();upd('reqs',a=>[{...f,id,uid:meId,t:Date.now()},...a]);go('done',{id})};
- A.conv=(reqId,proId,text)=>{const c=db.convs.find(x=>x.reqId===reqId&&x.proId===proId);if(c)return go('chat',{id:c.id});const req=db.reqs.find(r=>r.id===reqId),id='c'+rid();upd('convs',a=>[...a,{id,reqId,clientId:req.uid,proId,msgs:text?[{id:rid(),from:meId,text,t:Date.now(),read:false}]:[]}]);go('chat',{id})};
+ const go=(n,p={})=>{setV({n,...p});window.scrollTo(0,0)},say=m=>{setToast(m);setTimeout(()=>setToast(''),2500)},ask=(msg,fn)=>setModal({t:'c',msg,fn});
+ const reload=async()=>setDb(await loadAll()),fail=r=>{if(r.error){say('Action impossible. Réessayez.');console.error(r.error);return true}};
+ useEffect(()=>{sb.auth.getSession().then(async({data})=>{const u=data.session?.user;await reload();if(u)setMeId(u.id);setReady(true)})},[]);
+ useEffect(()=>{if(!meId)return;const t=setInterval(reload,8000);return()=>clearInterval(t)},[meId]);
+ const A={db,me,meId,meP,go,say,ask,modal,setModal,reload};
+ A.logout=async()=>{await sb.auth.signOut();setMeId(null);await reload();go('home')};
+ A.login=async(ph,pw)=>{const{data,error}=await sb.auth.signInWithPassword({email:em(ph),password:pw});if(error)return'Téléphone ou mot de passe incorrect.';const{data:p}=await sb.from('profiles').select('role,suspended').eq('id',data.user.id).single();if(p?.suspended){await sb.auth.signOut();return'Ce compte est suspendu.'}await reload();setMeId(data.user.id);go(p?.role==='admin'?'admin':'home');return null};
+ A.register=async f=>{const pro=f.role==='pro',{data,error}=await sb.auth.signUp({email:em(f.phone),password:f.pw,options:{data:{role:f.role,name:f.name.trim(),phone:f.phone,email:f.email||'',job_id:pro?+f.cat:null,city_id:pro?+f.cityId:null,zone:f.zone||''}}});if(error)return/registered|already/i.test(error.message)?'Ce numéro est déjà inscrit.':'Inscription impossible : '+error.message;if(!data.session)return'Désactivez « Confirm email » dans Supabase (Authentication).';await reload();setMeId(data.user.id);go(pro?'me':'home');say('Compte créé');return null};
+ A.publish=async f=>{const r=await sb.from('requests').insert({client_id:meId,job_id:+f.cat,city_id:+f.cityId,quartier:f.q.trim(),title:f.title.trim(),description:f.desc.trim(),budget:f.budget||null}).select().single();if(fail(r))return;await reload();go('done',{id:r.data.id})};
+ A.conv=async(reqId,proId,text)=>{const c=db.convs.find(x=>x.reqId===reqId&&x.proId===proId);if(c)return go('chat',{id:c.id});const req=db.reqs.find(r=>r.id===reqId),r=await sb.from('conversations').insert({request_id:reqId,client_id:req.uid,pro_id:proId}).select().single();if(fail(r))return;if(text)await sb.from('messages').insert({conversation_id:r.data.id,sender_id:meId,body:text});await reload();go('chat',{id:r.data.id})};
  A.interest=r=>A.conv(r.id,meP.id,'Bonjour, je suis intéressé par votre demande « '+r.title+' ». Je suis disponible pour en discuter.');
- A.contact=p=>{if(!me)return go('auth',{mode:'reg',role:'client'});if(me.role!=='client')return say('Réservé aux clients');const r=db.reqs.find(x=>x.uid===meId&&x.cat===p.cat);if(!r){say('Publiez d’abord une demande pour ce métier.');return go('pub',{cat:p.cat})}A.conv(r.id,p.id,null)};
- A.send=(cid,text,img)=>upd('convs',a=>a.map(c=>c.id===cid?{...c,msgs:[...c.msgs,{id:rid(),from:meId,text,img,t:Date.now(),read:false}]}:c));
+ A.contact=p=>{if(!me)return go('auth',{mode:'reg',role:'client'});if(me.role!=='client')return say('Réservé aux clients');const r=db.reqs.find(x=>x.uid===meId&&x.cat===p.cat&&x.cityId===p.cityId);if(!r){say('Publiez d’abord une demande pour ce métier et cette ville.');return go('pub',{cat:p.cat})}A.conv(r.id,p.id,null)};
+ A.send=async(cid,text)=>{const r=await sb.from('messages').insert({conversation_id:cid,sender_id:meId,body:text});if(!fail(r))reload()};
+ A.markRead=async cid=>{await sb.from('messages').update({read_at:new Date().toISOString()}).eq('conversation_id',cid).neq('sender_id',meId).is('read_at',null);reload()};
+ A.saveProfile=async d=>{const r=await sb.from('professionals').update(d).eq('id',meId);if(!fail(r)){await reload();say('Profil enregistré')}};
+ A.block=async k=>{const r=await sb.from('blocks').insert({blocker_id:meId,blocked_id:k});if(!fail(r))reload()};
+ A.report=async(t,n,rs)=>{const r=await sb.from('reports').insert({reporter_id:meId,target_type:t,target_name:n,reason:rs});if(!fail(r))say('Signalement envoyé. Merci.')};
+ A.suspend=async u=>{await sb.rpc('admin_set_suspended',{uid:u.id,s:!u.suspended});reload()};
  const N=v.n,priv=['list','pub','msgs','chat','me','req','done'].includes(N)&&!me,ub=me&&me.role!=='admin'?mine(A).reduce((s,c)=>s+unread(A,c),0):0;
  const V=priv?<Auth A={A} v={{}}/>:{home:<Home A={A}/>,auth:<Auth A={A} v={v}/>,pub:<Pub A={A} v={v}/>,done:<Done A={A}/>,list:me&&<List A={A} v={v}/>,req:me&&v.id&&<Req A={A} v={v}/>,pro:<Prof A={A} v={v}/>,msgs:me&&<Msgs A={A}/>,chat:me&&<Chat A={A} v={v}/>,me:me&&<Me A={A}/>,admin:me&&<Admin A={A}/>,about:<About/>}[N];
  const on={chat:'msgs',pro:'list',req:'list',pub:'list',done:'list'}[N]||N;
  const tabs=!me?[['Accueil','home'],['Se connecter','auth',{mode:'login'}],['S’inscrire','auth',{mode:'reg'}],['À propos','about']]:me.role==='admin'?[['Admin','admin'],['Accueil','home'],['À propos','about'],['Quitter','out']]:[['Accueil','home'],['Demandes','list'],['Messages'+(ub?' ('+ub+')':''),'msgs'],['Profil','me'],['À propos','about']];
- return<><header><div className="hd"><span>Wagup Link</span><span className="s" style={{color:'#CBD5E1'}}>Version de démonstration</span></div></header><div className="w">{V}</div>
+ return<><header><div className="hd"><span>Wagup Link</span></div></header><div className="w">{ready?V:<p className="s">Chargement…</p>}</div>
  <nav>{tabs.map(([l,k,p])=><button key={l} className={on===k&&!(k==='auth'&&p.mode!==(v.mode||'login'))?'on':''} onClick={()=>k==='out'?A.logout():go(k,p)}>{l}</button>)}</nav><Modal A={A}/>{toast&&<div className="toast">{toast}</div>}</>}
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script></body></html>
