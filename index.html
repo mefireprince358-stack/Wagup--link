@@ -162,7 +162,7 @@ function App(){
  const go=(n,p={})=>{setV({n,...p});window.scrollTo(0,0)},say=m=>{setToast(m);setTimeout(()=>setToast(''),2500)},ask=(msg,fn)=>setModal({t:'c',msg,fn});
  const reload=async()=>setDb(await loadAll()),fail=r=>{if(r.error){say('Action impossible. Réessayez.');console.error(r.error);return true}};
  useEffect(()=>{sb.auth.getSession().then(async({data})=>{const u=data.session?.user;await reload();if(u)setMeId(u.id);setReady(true)})},[]);
- useEffect(()=>{if(!meId)return;const t=setInterval(reload,8000);return()=>clearInterval(t)},[meId]);
+ useEffect(()=>{if(!meId)return;let w;const rl=()=>{clearTimeout(w);w=setTimeout(reload,300)},vis=()=>{if(!document.hidden)reload()};const ch=sb.channel('live-'+meId);['messages','conversations','requests'].forEach(t=>ch.on('postgres_changes',{event:'*',schema:'public',table:t},rl));ch.subscribe();document.addEventListener('visibilitychange',vis);const t=setInterval(reload,30000);return()=>{clearTimeout(w);clearInterval(t);document.removeEventListener('visibilitychange',vis);sb.removeChannel(ch)}},[meId]);
  const A={db,me,meId,meP,go,say,ask,modal,setModal,reload};
  A.logout=async()=>{await sb.auth.signOut();setMeId(null);await reload();go('home')};
  A.login=async(ph,pw)=>{const{data,error}=await sb.auth.signInWithPassword({email:em(ph),password:pw});if(error)return'Téléphone ou mot de passe incorrect.';const{data:p}=await sb.from('profiles').select('role,suspended').eq('id',data.user.id).single();if(p?.suspended){await sb.auth.signOut();return'Ce compte est suspendu.'}await reload();setMeId(data.user.id);go(p?.role==='admin'?'admin':'home');return null};
