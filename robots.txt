@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://wagup-link.vercel.app/sitemap.xml
