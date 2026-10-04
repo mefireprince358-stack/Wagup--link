@@ -72,7 +72,8 @@ const {useState,useEffect}=React;
 const CATS=[];let CITIES=[];
 const cat=id=>CATS.find(c=>c.id===id);
 const SB_URL='https://qefwshejyoywnglamkft.supabase.co',SB_KEY='sb_publishable_He_E87wvQxYNBPOrgaucNg_N71Ljvib';
-const sb=supabase.createClient(SB_URL,SB_KEY);
+const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{lock:async(n,t,f)=>await f()}});
+const wt=(p,ms,d)=>Promise.race([p,new Promise(r=>setTimeout(()=>r(d),ms))]);
 const em=ph=>ph.includes('@')?ph.trim():ph.trim()+'@wagup.app';
 const T=x=>new Date(x).getTime();
 let PHONE={},AVT={};
@@ -203,12 +204,12 @@ function App(){
  const[db,setDb]=useState({users:[],pros:[],reqs:[],convs:[],blocks:[],reports:[]}),[meId,setMeId]=useState(null),[ready,setReady]=useState(false),[v,setV]=useState({n:'home'}),[modal,setModal]=useState(null),[toast,setToast]=useState('');
  const me=db.users.find(u=>u.id===meId),meP=me&&db.pros.find(p=>p.id===me.proId);
  const go=(n,p={})=>{setV({n,...p});window.scrollTo(0,0)},say=m=>{setToast(m);setTimeout(()=>setToast(''),2500)},ask=(msg,fn)=>setModal({t:'c',msg,fn});
- const reload=async()=>setDb(await loadAll()),fail=r=>{if(r.error){say(/Limite|Doublon/.test(r.error.message)?r.error.message:'Action impossible. Réessayez.');console.error(r.error);return true}};
- useEffect(()=>{sb.auth.getSession().then(async({data})=>{const u=data.session?.user;await reload();if(u)setMeId(u.id);setReady(true)})},[]);
+ const reload=async()=>{try{setDb(await loadAll())}catch(e){console.error(e)}},fail=r=>{if(r.error){say(/Limite|Doublon/.test(r.error.message)?r.error.message:'Action impossible. Réessayez.');console.error(r.error);return true}};
+ useEffect(()=>{let d=false;const fin=()=>{if(!d){d=true;setReady(true)}},t=setTimeout(fin,6000);(async()=>{try{const{data}=await wt(sb.auth.getSession(),4000,{data:{}}),u=data?.session?.user;await reload();if(u)setMeId(u.id)}catch(e){console.error(e)}clearTimeout(t);fin()})();return()=>clearTimeout(t)},[]);
  useEffect(()=>{if(!meId)return;let w;const rl=()=>{clearTimeout(w);w=setTimeout(reload,300)},vis=()=>{if(!document.hidden)reload()};const ch=sb.channel('live-'+meId);['messages','conversations','requests'].forEach(t=>ch.on('postgres_changes',{event:'*',schema:'public',table:t},rl));ch.subscribe();document.addEventListener('visibilitychange',vis);const t=setInterval(reload,30000);return()=>{clearTimeout(w);clearInterval(t);document.removeEventListener('visibilitychange',vis);sb.removeChannel(ch)}},[meId]);
  const A={db,me,meId,meP,go,say,ask,modal,setModal,reload};
  A.logout=async()=>{await sb.auth.signOut();setMeId(null);await reload();go('home')};
- A.login=async(ph,pw)=>{const{data,error}=await sb.auth.signInWithPassword({email:em(ph),password:pw});if(error)return'Téléphone ou mot de passe incorrect.';const{data:p}=await sb.from('profiles').select('role,suspended').eq('id',data.user.id).single();if(p?.suspended){await sb.auth.signOut();return'Ce compte est suspendu.'}await reload();setMeId(data.user.id);go(p?.role==='admin'?'admin':'home');return null};
+ A.login=async(ph,pw)=>{const{data,error}=await wt(sb.auth.signInWithPassword({email:em(ph),password:pw}),15000,{error:{timeout:true}});if(error)return error.timeout?'Connexion trop lente. Réessayez dans un instant.':'Téléphone ou mot de passe incorrect.';const{data:p}=await sb.from('profiles').select('role,suspended').eq('id',data.user.id).single();if(p?.suspended){await sb.auth.signOut();return'Ce compte est suspendu.'}await reload();setMeId(data.user.id);go(p?.role==='admin'?'admin':'home');return null};
  A.register=async f=>{const pro=f.role==='pro',{data,error}=await sb.auth.signUp({email:em(f.phone),password:f.pw,options:{data:{role:f.role,name:f.name.trim(),phone:f.phone,email:f.email||'',job_id:pro?+f.cat:null,city_id:pro?+f.cityId:null,zone:f.zone||''}}});if(error)return/registered|already/i.test(error.message)?'Ce numéro est déjà inscrit.':'Inscription impossible : '+error.message;if(!data.session)return'Désactivez « Confirm email » dans Supabase (Authentication).';await reload();setMeId(data.user.id);go(pro?'me':'home');say('Compte créé');return null};
  A.publish=async f=>{let ip=null;if(f.file){try{const b=await shrink(f.file,1280),p=meId+'/'+Date.now()+rid()+'.jpg',u=await sb.storage.from('request-images').upload(p,b,{contentType:'image/jpeg'});if(u.error)throw u.error;ip=p}catch(e){say('Photo non envoyée : demande publiée sans photo.')}}const r=await sb.from('requests').insert({image_url:ip,client_id:meId,job_id:+f.cat,city_id:+f.cityId,quartier:f.q.trim(),title:f.title.trim(),description:f.desc.trim(),budget:f.budget||null,desired_date:f.delai.trim(),confirmed_real:true}).select().single();if(fail(r))return;await reload();go('done',{id:r.data.id})};
  A.needV=()=>{if(A.me?.role==='pro'&&PHONE.pv&&meP?.vs!=='verified'){say('Votre profil doit d’abord être validé par l’administrateur.');return true}};
@@ -233,5 +234,6 @@ function App(){
  const tabs=!me?[['Accueil','home'],['Se connecter','auth',{mode:'login'}],['S’inscrire','auth',{mode:'reg'}],['À propos','about']]:me.role==='admin'?[['Admin','admin'],['Accueil','home'],['À propos','about'],['Quitter','out']]:me.role==='pro'?[['Accueil','home'],['Demandes','list'],['Messages'+(ub?' ('+ub+')':''),'msgs'],['Profil','me'],['À propos','about']]:[['Accueil','home'],['Pros','list'],['Demandes','mine'],['Messages'+(ub?' ('+ub+')':''),'msgs'],['Profil','me']];
  return<><header><div className="hd"><span>Wagup Link</span>{me&&<div className="tools"><button className="ic" aria-label="Rechercher" onClick={()=>go('list')}>🔍</button><button className="ic" aria-label="Mon profil" onClick={()=>go('me')}>{(me.name||'?')[0]}</button></div>}</div></header><div className="w">{ready?V:<p className="s">Chargement…</p>}</div>
  <nav>{tabs.map(([l,k,p])=><button key={l} className={on===k&&!(k==='auth'&&p.mode!==(v.mode||'login'))?'on':''} onClick={()=>k==='out'?A.logout():go(k,p)}>{l}</button>)}</nav><Modal A={A}/>{toast&&<div className="toast">{toast}</div>}</>}
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+class EB extends React.Component{constructor(p){super(p);this.state={e:0}}static getDerivedStateFromError(){return{e:1}}render(){return this.state.e?<div style={{padding:24,color:'#94A3B8',font:'16px/1.5 sans-serif'}}><h2 style={{color:'#F1F5F9'}}>Un problème est survenu</h2><p>Rechargez la page. Si cela continue, déconnectez-vous puis reconnectez-vous.</p><button className="btn p" onClick={()=>{try{sb.auth.signOut()}catch(e){}location.reload()}}>Recharger</button></div>:this.props.children}}
+ReactDOM.createRoot(document.getElementById('root')).render(<EB><App/></EB>);
 </script></body></html>
